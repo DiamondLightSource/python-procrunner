@@ -22,8 +22,8 @@ deploy:
   distributions: sdist bdist_wheel
   user: mgerstel
   password:
-    secure: PLEASE_REPLACE_ME
+    secure: qN3EYVlH22eLPZp5CSvc5Bz8bpP0l0wBZ8tcYMa6kBrqelYdIgqkuZESR/oCMu1YBA3AbcKJNwMuzuWf8RNGAFebD820OJThdP4czRMCv6LDbWABnv12lFHQLQSW1fMQVvb2arjnE/Ew7BFq70p0wOlIJJRwu6CoeOXW/sMeVYMivxdaHmgORq3cdMluFAy4amVb3Fc8i7mxAM0QGklO7x/UWJR/IEpUk2RlUbXL+HrzNoEjRtDeMxoCR84gKZTjVeUQ/iIQSuWwxlt7v1FNENj6ZEbE7+PS8/ylIVfPufbCr8tEEv8W58QcxQ5xPJC2g85ulsN5dM9/9FekhpyKa25B/4wKUNq5T8rKJ8WZ6hMiGffW8rmAfrGTmrBaojKBi0pb9VfXJ5KXUcunVXwQaAn2L80jLLHNsAo94ZxeoowD1eJox9Wh1NtNc+NiUv8K6spOIBsur7G5GY4JVA/yZ7w+DweEfQEp8/SEdVhK0vEYSYT4FnJHuAAmNgeedyAtoes4+a5bYYUM4qrz2OC78NWQWAnnsZhD4Y/TulkavWSexVCqfSePRoK3gcCs+rXwiM69XkMbL1Wgj1gNou+XMkntayH2ZDHkkyJi5F7ls4nqMH5RON9FfVygJMoHDRqh0p4RV25IzJ4FSYqKihHNBO31/URnU2ihpW7n8kM+mbM=
   on:
     tags: true
-    repo: DiamondLightSource/procrunner
+    repo: DiamondLightSource/python-procrunner
     python: 3.6
