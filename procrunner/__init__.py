@@ -6,10 +6,10 @@ import copy
 import logging
 import os
 import select
+import six
 import subprocess
 import time
 import timeit
-from cStringIO import StringIO
 from multiprocessing import Pipe
 from threading import Thread
 
@@ -91,7 +91,7 @@ class _NonBlockingStreamReader:
   '''Reads a stream in a thread to avoid blocking/deadlocks'''
   def __init__(self, stream, output=True, debug=False, notify=None, callback=None):
     '''Creates and starts a thread which reads from a stream.'''
-    self._buffer = StringIO()
+    self._buffer = six.StringIO()
     self._closed = False
     self._closing = False
     self._debug = debug
