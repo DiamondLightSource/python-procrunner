@@ -110,6 +110,8 @@ def test_use_default_process_environment_and_add_another_value(mock_subprocess):
   with pytest.raises(NotImplementedError):
     procrunner.run_process(mock.Mock(), -1, False, environment_override=copy.copy(mock_env2))
   random_environment_variable = list(os.environ)[0]
+  if random_environment_variable == list(mock_env2)[0]:
+    random_environment_variable = list(os.environ)[1]
   random_environment_value = os.getenv(random_environment_variable)
   assert random_environment_variable and random_environment_variable != list(mock_env2)[0]
   assert mock_subprocess.Popen.call_args[1]['env'][list(mock_env2)[0]] == mock_env2[list(mock_env2)[0]]
