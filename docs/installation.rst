@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/DiamondLightSource/procrunner
+    $ git clone git://github.com/DiamondLightSource/python-procrunner
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/DiamondLightSource/procrunner/tarball/master
+    $ curl  -OL https://github.com/DiamondLightSource/python-procrunner/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/DiamondLightSource/procrunner
-.. _tarball: https://github.com/DiamondLightSource/procrunner/tarball/master
+.. _Github repo: https://github.com/DiamondLightSource/python-procrunner
+.. _tarball: https://github.com/DiamondLightSource/python-procrunner/tarball/master

@@ -6,16 +6,16 @@ ProcRunner
 .. image:: https://img.shields.io/pypi/v/procrunner.svg
         :target: https://pypi.python.org/pypi/procrunner
 
-.. image:: https://img.shields.io/travis/DiamondLightSource/procrunner.svg
-        :target: https://travis-ci.org/DiamondLightSource/procrunner
+.. image:: https://img.shields.io/travis/DiamondLightSource/python-procrunner.svg
+        :target: https://travis-ci.org/DiamondLightSource/python-procrunner
 
 .. image:: https://readthedocs.org/projects/procrunner/badge/?version=latest
         :target: https://procrunner.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 
-.. image:: https://pyup.io/repos/github/DiamondLightSource/procrunner/shield.svg
-     :target: https://pyup.io/repos/github/DiamondLightSource/procrunner/
+.. image:: https://pyup.io/repos/github/DiamondLightSource/python-procrunner/shield.svg
+     :target: https://pyup.io/repos/github/DiamondLightSource/python-procrunner/
      :alt: Updates
 
 
