@@ -111,8 +111,8 @@ def test_use_default_process_environment_and_add_another_value(mock_subprocess):
     procrunner.run_process(mock.Mock(), -1, False, environment_override=copy.copy(mock_env2))
   random_environment_variable = list(os.environ)[0]
   random_environment_value = os.getenv(random_environment_variable)
-  assert random_environment_variable and random_environment_variable != mock_env2.keys()[0]
-  assert mock_subprocess.Popen.call_args[1]['env'][mock_env2.keys()[0]] == mock_env2.values()[0]
+  assert random_environment_variable and random_environment_variable != list(mock_env2)[0]
+  assert mock_subprocess.Popen.call_args[1]['env'][list(mock_env2)[0]] == mock_env2[list(mock_env2)[0]]
   assert mock_subprocess.Popen.call_args[1]['env'][random_environment_variable] == os.getenv(random_environment_variable)
 
 
