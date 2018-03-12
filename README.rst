@@ -6,7 +6,7 @@ ProcRunner
 .. image:: https://img.shields.io/pypi/v/procrunner.svg
         :target: https://pypi.python.org/pypi/procrunner
 
-.. image:: https://img.shields.io/travis/DiamondLightSource/python-procrunner.svg
+.. image:: https://travis-ci.org/DiamondLightSource/python-procrunner.svg?branch=master
         :target: https://travis-ci.org/DiamondLightSource/python-procrunner
 
 .. image:: https://readthedocs.org/projects/procrunner/badge/?version=latest
