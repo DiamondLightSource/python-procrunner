@@ -130,7 +130,7 @@ def test_use_default_process_environment_and_override_a_value(mock_subprocess):
 @mock.patch('procrunner.select')
 def test_nonblockingstreamreader_can_read(mock_select):
   import time
-  class _stream:
+  class _stream(object):
     def __init__(self):
       self.data = ""
       self.closed = False

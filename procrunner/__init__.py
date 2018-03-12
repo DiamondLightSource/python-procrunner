@@ -57,7 +57,7 @@ dummy = False
 logger = logging.getLogger('procrunner')
 logger.addHandler(logging.NullHandler())
 
-class _LineAggregator:
+class _LineAggregator(object):
   '''Buffer that can be filled with stream data and will aggregate complete
      lines. Lines can be printed or passed to an arbitrary callback function.
      The lines passed to the callback function do not contain a trailing
@@ -87,7 +87,7 @@ class _LineAggregator:
         self._callback(self._buffer)
     self._buffer = ''
 
-class _NonBlockingStreamReader:
+class _NonBlockingStreamReader(object):
   '''Reads a stream in a thread to avoid blocking/deadlocks'''
   def __init__(self, stream, output=True, debug=False, notify=None, callback=None):
     '''Creates and starts a thread which reads from a stream.'''
@@ -147,7 +147,7 @@ class _NonBlockingStreamReader:
     self._buffer.close()
     return data
 
-class _NonBlockingStreamWriter:
+class _NonBlockingStreamWriter(object):
   '''Writes to a stream in a thread to avoid blocking/deadlocks'''
   def __init__(self, stream, data, debug=False, notify=None):
     '''Creates and starts a thread which writes data to stream.'''
