@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 
-"""Top-level package for ProcRunner."""
+from __future__ import absolute_import, division, print_function
 
-__author__ = """Markus Gerstel"""
-__email__ = 'scientificsoftware@diamond.ac.uk'
-__version__ = '0.1.0'
+import copy
+import logging
+import os
+import select
+import subprocess
+import time
+import timeit
+from cStringIO import StringIO
+from multiprocessing import Pipe
+from threading import Thread
 
 #
 #  run_process() - A function to synchronously run an external process,
@@ -41,23 +48,14 @@ __version__ = '0.1.0'
 #  'timeout': False}
 #
 
-from __future__ import absolute_import, division, print_function
+__author__ = """Markus Gerstel"""
+__email__ = 'scientificsoftware@diamond.ac.uk'
+__version__ = '0.1.0'
 
-import copy
-import logging
-import os
-import select
-import subprocess
-import time
-import timeit
-from cStringIO import StringIO
-from multiprocessing import Pipe
-from threading import Thread
+dummy = False
 
 logger = logging.getLogger('procrunner')
 logger.addHandler(logging.NullHandler())
-
-dummy = False
 
 class _LineAggregator:
   '''Buffer that can be filled with stream data and will aggregate complete
