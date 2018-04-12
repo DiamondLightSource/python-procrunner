@@ -2,10 +2,7 @@
 Credits
 =======
 
-Development Lead
-----------------
-
-* Markus Gerstel <scientificsoftware@diamond.ac.uk>
+* Markus Gerstel
 
 Contributors
 ------------

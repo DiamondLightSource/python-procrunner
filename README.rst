@@ -30,7 +30,18 @@ Versatile utility function to run external processes
 Features
 --------
 
-* TODO
+* runs an external process and waits for it to finish
+* does not deadlock, no matter the process stdout/stderr output behaviour
+* returns the exit code, stdout, stderr (separately), and the total process
+  runtime as a dictionary
+* process can run in a custom environment, either as a modification of
+  the current environment or in a new environment from scratch
+* stdin can be fed to the process, the returned dictionary contains
+  information how much was read by the process
+* stdout and stderr is printed by default, can be disabled
+* stdout and stderr can be passed to any arbitrary function for
+  live processing
+* optionally enforces a time limit on the process
 
 Credits
 -------
