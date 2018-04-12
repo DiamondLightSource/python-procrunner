@@ -6,7 +6,6 @@ import os
 import procrunner
 import pytest
 
-@pytest.mark.skipif(procrunner.dummy, reason='procrunner class set to dummy mode')
 @mock.patch('procrunner._NonBlockingStreamReader')
 @mock.patch('procrunner.time')
 @mock.patch('procrunner.subprocess')
@@ -19,14 +18,13 @@ def test_run_command_aborts_after_timeout(mock_pipe, mock_subprocess, mock_time,
   task = ['___']
 
   with pytest.raises(RuntimeError):
-    procrunner.run_process(task, -1, False)
+    procrunner.run(task, -1, False)
 
   assert mock_subprocess.Popen.called
   assert mock_process.terminate.called
   assert mock_process.kill.called
 
 
-@pytest.mark.skipif(procrunner.dummy, reason='procrunner class set to dummy mode')
 @mock.patch('procrunner._NonBlockingStreamReader')
 @mock.patch('procrunner.subprocess')
 def test_run_command_runs_command_and_directs_pipelines(mock_subprocess, mock_streamreader):
@@ -55,7 +53,7 @@ def test_run_command_runs_command_and_directs_pipelines(mock_subprocess, mock_st
     'time_end': mock.ANY
   }
 
-  actual = procrunner.run_process(command, 0.5, False,
+  actual = procrunner.run(command, 0.5, False,
                callback_stdout=mock.sentinel.callback_stdout, callback_stderr=mock.sentinel.callback_stderr)
 
   assert mock_subprocess.Popen.called
@@ -68,27 +66,24 @@ def test_run_command_runs_command_and_directs_pipelines(mock_subprocess, mock_st
   assert actual == expected
 
 
-@pytest.mark.skipif(procrunner.dummy, reason='procrunner class set to dummy mode')
 @mock.patch('procrunner.subprocess')
 def test_default_process_environment_is_parent_environment(mock_subprocess):
   mock_subprocess.Popen.side_effect = NotImplementedError() # cut calls short
   with pytest.raises(NotImplementedError):
-    procrunner.run_process(mock.Mock(), -1, False)
+    procrunner.run(mock.Mock(), -1, False)
   assert mock_subprocess.Popen.call_args[1]['env'] == os.environ
 
 
-@pytest.mark.skipif(procrunner.dummy, reason='procrunner class set to dummy mode')
 @mock.patch('procrunner.subprocess')
 def test_pass_custom_environment_to_process(mock_subprocess):
   mock_subprocess.Popen.side_effect = NotImplementedError() # cut calls short
   mock_env = { 'key': mock.sentinel.key }
   # Pass an environment dictionary
   with pytest.raises(NotImplementedError):
-    procrunner.run_process(mock.Mock(), -1, False, environment=copy.copy(mock_env))
+    procrunner.run(mock.Mock(), -1, False, environment=copy.copy(mock_env))
   assert mock_subprocess.Popen.call_args[1]['env'] == mock_env
 
 
-@pytest.mark.skipif(procrunner.dummy, reason='procrunner class set to dummy mode')
 @mock.patch('procrunner.subprocess')
 def test_pass_custom_environment_to_process_and_add_another_value(mock_subprocess):
   mock_subprocess.Popen.side_effect = NotImplementedError() # cut calls short
@@ -96,19 +91,18 @@ def test_pass_custom_environment_to_process_and_add_another_value(mock_subproces
   mock_env2 = { 'keyB': str(mock.sentinel.keyB) }
   # Pass an environment dictionary
   with pytest.raises(NotImplementedError):
-    procrunner.run_process(mock.Mock(), -1, False, environment=copy.copy(mock_env1), environment_override=copy.copy(mock_env2))
+    procrunner.run(mock.Mock(), -1, False, environment=copy.copy(mock_env1), environment_override=copy.copy(mock_env2))
   mock_env_sum = copy.copy(mock_env1)
   mock_env_sum.update(mock_env2)
   assert mock_subprocess.Popen.call_args[1]['env'] == mock_env_sum
 
 
-@pytest.mark.skipif(procrunner.dummy, reason='procrunner class set to dummy mode')
 @mock.patch('procrunner.subprocess')
 def test_use_default_process_environment_and_add_another_value(mock_subprocess):
   mock_subprocess.Popen.side_effect = NotImplementedError() # cut calls short
   mock_env2 = { 'keyB': str(mock.sentinel.keyB) }
   with pytest.raises(NotImplementedError):
-    procrunner.run_process(mock.Mock(), -1, False, environment_override=copy.copy(mock_env2))
+    procrunner.run(mock.Mock(), -1, False, environment_override=copy.copy(mock_env2))
   random_environment_variable = list(os.environ)[0]
   if random_environment_variable == list(mock_env2)[0]:
     random_environment_variable = list(os.environ)[1]
@@ -118,14 +112,13 @@ def test_use_default_process_environment_and_add_another_value(mock_subprocess):
   assert mock_subprocess.Popen.call_args[1]['env'][random_environment_variable] == os.getenv(random_environment_variable)
 
 
-@pytest.mark.skipif(procrunner.dummy, reason='procrunner class set to dummy mode')
 @mock.patch('procrunner.subprocess')
 def test_use_default_process_environment_and_override_a_value(mock_subprocess):
   mock_subprocess.Popen.side_effect = NotImplementedError() # cut calls short
   random_environment_variable = list(os.environ)[0]
   random_environment_value = os.getenv(random_environment_variable)
   with pytest.raises(NotImplementedError):
-    procrunner.run_process(mock.Mock(), -1, False, environment_override={ random_environment_variable: 'X' + random_environment_value })
+    procrunner.run(mock.Mock(), -1, False, environment_override={ random_environment_variable: 'X' + random_environment_value })
   assert mock_subprocess.Popen.call_args[1]['env'][random_environment_variable] == 'X' + random_environment_value
 
 

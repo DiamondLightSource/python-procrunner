@@ -10,12 +10,13 @@ import six
 import subprocess
 import time
 import timeit
+import warnings
 from multiprocessing import Pipe
 from threading import Thread
 
 #
-#  run_process() - A function to synchronously run an external process,
-#                  supporting the following features:
+#  run() - A function to synchronously run an external process, supporting
+#          the following features:
 #
 #    - runs an external process and waits for it to finish
 #    - does not deadlock, no matter the process stdout/stderr output behaviour
@@ -33,8 +34,8 @@ from threading import Thread
 #
 #  Usage example:
 #
-# from procrunner import run_process
-# result = run_process(['/bin/ls', '/some/path/containing spaces'])
+# import procrunner
+# result = procrunner.run(['/bin/ls', '/some/path/containing spaces'])
 #
 #  Returns:
 #
@@ -51,8 +52,6 @@ from threading import Thread
 __author__ = """Markus Gerstel"""
 __email__ = 'scientificsoftware@diamond.ac.uk'
 __version__ = '0.2.0'
-
-dummy = False
 
 logger = logging.getLogger('procrunner')
 logger.addHandler(logging.NullHandler())
@@ -199,10 +198,9 @@ class _NonBlockingStreamWriter(object):
     '''Return the number of bytes still to be written.'''
     return self._buffer_len - self._buffer_pos
 
-def run_process(command, timeout=None, debug=False, stdin=None,
-                print_stdout=True, print_stderr=True,
-                callback_stdout=None, callback_stderr=None,
-                environment=None, environment_override=None):
+def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
+        print_stderr=True, callback_stdout=None, callback_stderr=None,
+        environment=None, environment_override=None):
   '''Run an external process.
 
      :param array command: Command line to be run, specified as array.
@@ -337,6 +335,7 @@ def run_process(command, timeout=None, debug=False, stdin=None,
 def run_process_dummy(command, **kwargs):
   '''A stand-in function that returns a valid result dictionary indicating a
      successful execution. The external process is not run.'''
+  warnings.warn("procrunner.run_process_dummy() is deprecated", DeprecationWarning)
 
   time_start = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
   logger.info("run_process is disabled. Requested command: %s", command)
@@ -350,6 +349,7 @@ def run_process_dummy(command, **kwargs):
                     'stdin_bytes_remain': 0 })
   return result
 
-
-if dummy:
-  run_process = run_process_dummy
+def run_process(*args, **kwargs):
+  '''API used up to version 0.2.0.'''
+  warnings.warn("procrunner.run_process() is deprecated and has been renamed to run()", DeprecationWarning)
+  return run(*args, **kwargs)
