@@ -12,5 +12,5 @@ def test_simple_command_invocation():
   result = procrunner.run(command)
 
   assert result['exitcode'] == 0
-  assert result['stdout'].strip() == 'hello'
-  assert result['stderr'] == ''
+  assert result['stdout'].strip() == b'hello'
+  assert result['stderr'] == b''

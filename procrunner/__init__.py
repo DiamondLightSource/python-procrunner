@@ -59,8 +59,8 @@ logger.addHandler(logging.NullHandler())
 class _LineAggregator(object):
   '''Buffer that can be filled with stream data and will aggregate complete
      lines. Lines can be printed or passed to an arbitrary callback function.
-     The lines passed to the callback function do not contain a trailing
-     newline character.'''
+     The lines passed to the callback function are UTF-8 decoded and do not
+     contain a trailing newline character.'''
   def __init__(self, print_line=False, callback=None):
     '''Create aggregator object.'''
     self._buffer = ''
@@ -69,6 +69,7 @@ class _LineAggregator(object):
   def add(self, data):
     '''Add a single character to buffer. If one or more full lines are found,
        print them (if desired) and pass to callback function.'''
+    data = data.decode('utf-8')
     self._buffer += data
     if "\n" in data:
       to_print, remainder = self._buffer.rsplit('\n')
@@ -90,7 +91,7 @@ class _NonBlockingStreamReader(object):
   '''Reads a stream in a thread to avoid blocking/deadlocks'''
   def __init__(self, stream, output=True, debug=False, notify=None, callback=None):
     '''Creates and starts a thread which reads from a stream.'''
-    self._buffer = six.StringIO()
+    self._buffer = six.BytesIO()
     self._closed = False
     self._closing = False
     self._debug = debug

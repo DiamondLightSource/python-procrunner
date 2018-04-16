@@ -127,19 +127,19 @@ def test_nonblockingstreamreader_can_read(mock_select):
   import time
   class _stream(object):
     def __init__(self):
-      self.data = ""
+      self.data = b""
       self.closed = False
     def write(self, string):
       self.data = self.data + string
     def read(self, n):
       if self.closed:
-        return ""
-      if self.data == "":
+        return b""
+      if self.data == b"":
         time.sleep(0.01)
-        return ""
+        return b""
       if (len(self.data) < n):
         data = self.data
-        self.data = ""
+        self.data = b""
       else:
         data = self.data[:n]
         self.data = self.data[n:]
@@ -152,7 +152,7 @@ def test_nonblockingstreamreader_can_read(mock_select):
     assert teststream in rlist
     if teststream.closed:
       return ([teststream], [], [])
-    if teststream.data == "":
+    if teststream.data == b"":
       return ([], [], [])
     return ([teststream], [], [])
   mock_select.select = select_replacement
@@ -160,7 +160,7 @@ def test_nonblockingstreamreader_can_read(mock_select):
   streamreader = procrunner._NonBlockingStreamReader(teststream, output=False)
   assert not streamreader.has_finished()
   time.sleep(0.1)
-  testdata = "abc\n" * 1024
+  testdata = b"abc\n" * 1024
   teststream.write(testdata)
   time.sleep(0.2)
   teststream.close()
@@ -176,14 +176,14 @@ def test_lineaggregator_aggregates_data():
   callback = mock.Mock()
   aggregator = procrunner._LineAggregator(callback=callback)
 
-  aggregator.add('some')
-  aggregator.add('string')
+  aggregator.add(b'some')
+  aggregator.add(b'string')
   callback.assert_not_called()
-  aggregator.add("\n")
+  aggregator.add(b"\n")
   callback.assert_called_once_with('somestring')
   callback.reset_mock()
-  aggregator.add('more')
-  aggregator.add('stuff')
+  aggregator.add(b'more')
+  aggregator.add(b'stuff')
   callback.assert_not_called()
   aggregator.flush()
   callback.assert_called_once_with('morestuff')
