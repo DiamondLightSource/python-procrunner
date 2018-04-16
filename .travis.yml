@@ -18,16 +18,16 @@ matrix:
       env: MTX=2.7
     - os: osx
       language: generic
-      env: PYTHON=3.6.5
+      env: PYTHON=3.6.5 TOXENV=py36
     - os: osx
       language: generic
-      env: PYTHON=3.5.5
+      env: PYTHON=3.5.5 TOXENV=py35
     - os: osx
       language: generic
-      env: PYTHON=3.4.8
+      env: PYTHON=3.4.8 TOXENV=py34
     - os: osx
       language: generic
-      env: PYTHON=2.7.14
+      env: PYTHON=2.7.14 TOXENV=py27
 
   allow_failures:
     - os: osx
