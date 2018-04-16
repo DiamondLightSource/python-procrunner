@@ -16,8 +16,28 @@ matrix:
       env: MTX=3.4
     - python: 2.7
       env: MTX=2.7
+    - python: 3.7-dev
+      env: MTX=3.7-Mac
+      os: osx
+    - python: 3.6
+      env: MTX=3.6-Mac
+      os: osx
+    - python: 3.5
+      env: MTX=3.5-Mac
+      os: osx
+    - python: 3.4
+      env: MTX=3.4-Mac
+      os: osx
+    - python: 2.7
+      env: MTX=2.7-Mac
+      os: osx
 
   allow_failures:
+    - env: MTX=2.7-Mac
+    - env: MTX=3.4-Mac
+    - env: MTX=3.5-Mac
+    - env: MTX=3.6-Mac
+    - env: MTX=3.7-Mac
     - env: MTX=3.7
     - env: MTX=3.8
 
