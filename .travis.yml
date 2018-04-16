@@ -16,28 +16,21 @@ matrix:
       env: MTX=3.4
     - python: 2.7
       env: MTX=2.7
-    - python: 3.7-dev
-      env: MTX=3.7-Mac
-      os: osx
-    - python: 3.6
-      env: MTX=3.6-Mac
-      os: osx
-    - python: 3.5
-      env: MTX=3.5-Mac
-      os: osx
-    - python: 3.4
-      env: MTX=3.4-Mac
-      os: osx
-    - python: 2.7
-      env: MTX=2.7-Mac
-      os: osx
+    - os: osx
+      language: generic
+      env: PYTHON=3.6.5
+    - os: osx
+      language: generic
+      env: PYTHON=3.5.5
+    - os: osx
+      language: generic
+      env: PYTHON=3.4.8
+    - os: osx
+      language: generic
+      env: PYTHON=2.7.14
 
   allow_failures:
-    - env: MTX=2.7-Mac
-    - env: MTX=3.4-Mac
-    - env: MTX=3.5-Mac
-    - env: MTX=3.6-Mac
-    - env: MTX=3.7-Mac
+    - os: osx
     - env: MTX=3.7
     - env: MTX=3.8
   fast_finish: true
