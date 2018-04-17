@@ -6,6 +6,7 @@ History
 -----
 
 * run_process() renamed to run()
+* Python3 compatibility fixes
 
 0.2.0 (2018-03-12)
 ------------------
