@@ -4,8 +4,6 @@ language: python
 
 matrix:
   include:
-    - python: 3.8-dev
-      env: MTX=3.8
     - python: 3.7-dev
       env: MTX=3.7
     - python: 3.6
@@ -30,9 +28,8 @@ matrix:
       env: PYTHON=2.7.14 TOXENV=py27
 
   allow_failures:
-    - os: osx
     - env: MTX=3.7
-    - env: MTX=3.8
+
   fast_finish: true
 
 before_install: |
