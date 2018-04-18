@@ -116,7 +116,28 @@ class _NonBlockingStreamReader(object):
       if notify:
         notify()
 
-    self._thread = Thread(target = _thread_write_stream_to_buffer)
+    def _thread_write_stream_to_buffer_windows():
+      line = True
+      while line:
+        line = self._stream.readline()
+        if line:
+          self._buffer.write(line)
+          if output or callback:
+            linedecode = line.decode('utf-8')
+            if output:
+              print(linedecode)
+            if callback:
+              callback(linedecode)
+      self._terminated = True
+      if self._debug:
+        logger.debug("Stream reader terminated")
+      if notify:
+        notify()
+
+    if os.name == "nt":
+      self._thread = Thread(target = _thread_write_stream_to_buffer_windows)
+    else:
+      self._thread = Thread(target = _thread_write_stream_to_buffer)
     self._thread.daemon = True
     self._thread.start()
 
@@ -267,7 +288,13 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
       if thread_pipe_pool:
         # Wait for up to 0.5 seconds or for a signal on a remaining stream,
         # which could indicate that the process has terminated.
-        event = thread_pipe_pool[0].poll(0.5)
+        try:
+          event = thread_pipe_pool[0].poll(0.5)
+        except IOError as e:
+          # on Windows this raises "IOError: [Errno 109] The pipe has been ended"
+          # which is for all intents and purposes equivalent to a True return value.
+          if e.errno != 109: raise
+          event = True
         if event:
           # One-shot, so remove stream and watch remaining streams
           thread_pipe_pool.pop(0)
