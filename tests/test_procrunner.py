@@ -5,6 +5,7 @@ import mock
 import os
 import procrunner
 import pytest
+import sys
 
 @mock.patch('procrunner._NonBlockingStreamReader')
 @mock.patch('procrunner.time')
@@ -123,6 +124,7 @@ def test_use_default_process_environment_and_override_a_value(mock_subprocess):
 
 
 @mock.patch('procrunner.select')
+@pytest.mark.skipif(sys.platform == 'win32', reason="test only relevant on platforms supporting select()")
 def test_nonblockingstreamreader_can_read(mock_select):
   import time
   class _stream(object):
