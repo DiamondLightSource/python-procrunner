@@ -12,5 +12,5 @@ def test_simple_command_invocation():
   result = procrunner.run(command)
 
   assert result['exitcode'] == 0
-  assert result['stdout'] == b'hello\n'
+  assert result['stdout'] == b'hello' + os.linesep.encode('utf-8')
   assert result['stderr'] == b''
