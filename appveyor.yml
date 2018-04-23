@@ -9,12 +9,22 @@ environment:
 
     - PYTHON: "C:\\Python27"
     - PYTHON: "C:\\Python34"
+      UNSTABLE: 1
     - PYTHON: "C:\\Python35"
+      UNSTABLE: 1
     - PYTHON: "C:\\Python36"
+      UNSTABLE: 1
     - PYTHON: "C:\\Python27-x64"
     - PYTHON: "C:\\Python34-x64"
+      UNSTABLE: 1
     - PYTHON: "C:\\Python35-x64"
+      UNSTABLE: 1
     - PYTHON: "C:\\Python36-x64"
+      UNSTABLE: 1
+
+matrix:
+  allow_failures:
+    - UNSTABLE: 1
 
 install:
   # Upgrade to the latest pip.

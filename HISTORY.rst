@@ -2,6 +2,11 @@
 History
 =======
 
+0.4.0 (2018-04-23)
+------------------
+
+* Python 2.7 support on Windows. Python3 not yet supported on Windows.
+
 0.3.0
 -----
 
