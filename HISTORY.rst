@@ -2,8 +2,8 @@
 History
 =======
 
-0.5.0
------
+0.5.0 (2018-04-26)
+------------------
 
 * New keyword 'win32resolve' which only takes effect on Windows and is enabled
   by default. This causes procrunner to call the Win32 API FindExecutable()
