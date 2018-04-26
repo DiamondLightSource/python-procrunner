@@ -269,11 +269,17 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
   if win32resolve and sys.platform == 'win32':
     try:
       import win32api
-      _, found_executable = win32api.FindExecutable(command[0])
-      logger.debug("Resolved %s as %s", command[0], found_executable)
-      command[0] = found_executable
     except ImportError:
-      logger.warn("Could not resolve executable name: package win32api missing")
+      win32api = None
+      if (2, 8) < sys.version_info < (3, 5):
+        logger.info("Resolving executable names only supported on Python 2.7 and 3.5+")
+      else:
+        logger.warn("Could not resolve executable name: package win32api missing")
+    try:
+      if win32api:
+        _, found_executable = win32api.FindExecutable(command[0])
+        logger.debug("Resolved %s as %s", command[0], found_executable)
+        command[0] = found_executable
     except Exception as e:
       if not hasattr(e, 'winerror'): raise
       logger.warn("Error trying to resolve the executable: %s", getattr(e, 'strerror', str(e)))

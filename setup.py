@@ -11,7 +11,8 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = ['six']
-if sys.platform == 'win32':
+if sys.platform == 'win32' and not ((2, 8) < sys.version_info < (3, 5)):
+  # PyWin32 is only supported on 2.7 and 3.5+
   requirements.append('pywin32')
 
 setup_requirements = ['pytest-runner', 'six']

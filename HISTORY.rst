@@ -9,7 +9,7 @@ History
   by default. This causes procrunner to call the Win32 API FindExecutable()
   function to try and lookup non-.exe files with the corresponding name. This
   means .bat/.cmd/etc.. files can now be run without explicitly specifying
-  their extension.
+  their extension. Only supported on Python 2.7 and 3.5+.
 
 0.4.0 (2018-04-23)
 ------------------
