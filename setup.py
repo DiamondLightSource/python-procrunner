@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""The setup script."""
-
 from setuptools import setup, find_packages
+import sys
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -12,6 +11,8 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = ['six']
+if sys.platform == 'win32':
+  requirements.append('pywin32')
 
 setup_requirements = ['pytest-runner', 'six']
 

@@ -8,6 +8,7 @@ import os
 import select
 import six
 import subprocess
+import sys
 import time
 import timeit
 import warnings
@@ -222,7 +223,7 @@ class _NonBlockingStreamWriter(object):
 
 def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
         print_stderr=True, callback_stdout=None, callback_stderr=None,
-        environment=None, environment_override=None):
+        environment=None, environment_override=None, win32resolve=True):
   '''Run an external process.
 
      :param array command: Command line to be run, specified as array.
@@ -238,6 +239,9 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
      :param dict environment: The full execution environment for the command.
      :param dict environment_override: Change environment variables from the
                                        current values for command execution.
+     :param win32resolve: If on Windows, find the appropriate executable first.
+                          This allows running of .bat, .cmd, etc. files without
+                          explicitly specifying their extension.
      :return: A dictionary containing stdout, stderr, runtime, exitcode,
               and more.
   '''
@@ -261,6 +265,18 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
   if environment_override:
     env = copy.copy(env)
     env.update(environment_override)
+
+  if win32resolve and sys.platform == 'win32':
+    try:
+      import win32api
+      _, found_executable = win32api.FindExecutable(command[0])
+      logger.debug("Resolved %s as %s", command[0], found_executable)
+      command[0] = found_executable
+    except ImportError:
+      logger.warn("Could not resolve executable name: package win32api missing")
+    except Exception as e:
+      if not hasattr(e, 'winerror'): raise
+      logger.warn("Error trying to resolve the executable: %s", getattr(e, 'strerror', str(e)))
 
   p = subprocess.Popen(command, shell=False, stdin=stdin_pipe, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
 
