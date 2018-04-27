@@ -2,6 +2,11 @@
 History
 =======
 
+0.5.1 (2018-04-27)
+------------------
+
+* Fix Win32API dependency installation on Windows.
+
 0.5.0 (2018-04-26)
 ------------------
 
