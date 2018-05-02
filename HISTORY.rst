@@ -2,6 +2,11 @@
 History
 =======
 
+0.6.1 (2018-05-02)
+------------------
+
+* Maintenance release to add some tests for executable resolution.
+
 0.6.0 (2018-05-02)
 ------------------
 
