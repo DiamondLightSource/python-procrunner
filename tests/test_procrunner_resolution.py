@@ -7,6 +7,10 @@ import procrunner
 import pytest
 
 @pytest.mark.skipif(sys.platform != 'win32', reason="windows specific test only")
+def test_pywin32_import():
+  import win32api
+
+@pytest.mark.skipif(sys.platform != 'win32', reason="windows specific test only")
 def test_name_resolution_for_simple_exe():
   command = ['cmd.exe', '/c', 'echo', 'hello']
 
