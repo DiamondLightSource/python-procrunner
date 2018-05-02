@@ -221,7 +221,7 @@ class _NonBlockingStreamWriter(object):
     '''Return the number of bytes still to be written.'''
     return self._buffer_len - self._buffer_pos
 
-def _windows_resolve(executable):
+def _windows_resolve(command):
   '''Try and find the full path and file extension of the executable to run.
      This is so that e.g. calls to 'somescript' will point at 'somescript.cmd'
      without the need to set shell=True in the subprocess.
@@ -229,10 +229,11 @@ def _windows_resolve(executable):
      win32api call will fail to resolve the extension automatically, and it
      has do be done explicitly.
 
-     :param executable: The name of the executable to run,
-                        with or without path, with or without extension.
-     :return: The name of the executable to run with the correct extension.
-              Returns the value of 'executable' argument if unable to resolve.
+     :param command: The command array to be run, with the first element being
+                     the command with or w/o path, with or w/o extension.
+     :return: Returns the command array with the executable resolved with the
+              correct extension. If the executable cannot be resolved for any
+              reason the original command array is returned.
   '''
   try:
     import win32api
@@ -241,12 +242,19 @@ def _windows_resolve(executable):
       logger.info("Resolving executable names only supported on Python 2.7 and 3.5+")
     else:
       logger.warn("Could not resolve executable name: package win32api missing")
-    return executable
+    return command
 
   try:
-    _, found_executable = win32api.FindExecutable(executable)
-    logger.debug("Resolved %s as %s", executable, found_executable)
-    return found_executable
+    # Ensure the command parameter is iterable.
+    iter(command)
+  except TypeError:
+    # If it is not iterable it could be a Mock(). Return it untouched.
+    return command
+
+  try:
+    _, found_executable = win32api.FindExecutable(command[0])
+    logger.debug("Resolved %s as %s", command[0], found_executable)
+    return [ found_executable ] + command[1:]
   except Exception as e:
     if not hasattr(e, 'winerror'): raise
     # Keep this error message for later in case we fail to resolve the name
@@ -257,14 +265,14 @@ def _windows_resolve(executable):
     # try to resolve the executable explicitly.
     for extension in os.getenv('PATHEXT').split(os.pathsep):
       try:
-        _, found_executable = win32api.FindExecutable(executable + extension)
-        logger.debug("Resolved %s as %s", executable, found_executable)
-        return found_executable
+        _, found_executable = win32api.FindExecutable(command[0] + extension)
+        logger.debug("Resolved %s as %s", command[0], found_executable)
+        return [ found_executable ] + command[1:]
       except Exception as e:
         if not hasattr(e, 'winerror'): raise
 
   logger.warn("Error trying to resolve the executable: %s", logwarning)
-  return executable
+  return command
 
 def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
         print_stderr=True, callback_stdout=None, callback_stderr=None,
@@ -311,8 +319,8 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
     env = copy.copy(env)
     env.update(environment_override)
 
-  if win32resolve and sys.platform == 'win32':
-    command[0] = _windows_resolve(command[0])
+  if win32resolve and sys.platform == 'win32' and :
+    command = _windows_resolve(command)
 
   p = subprocess.Popen(command, shell=False, stdin=stdin_pipe, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
 
