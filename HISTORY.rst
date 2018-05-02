@@ -2,6 +2,12 @@
 History
 =======
 
+0.6.0 (2018-05-02)
+------------------
+
+* Fix Win32 API executable resolution for commands containing a dot ('.') in
+  addition to a file extension (say '.bat').
+
 0.5.1 (2018-04-27)
 ------------------
 
