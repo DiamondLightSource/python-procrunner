@@ -319,7 +319,7 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
     env = copy.copy(env)
     env.update(environment_override)
 
-  if win32resolve and sys.platform == 'win32' and :
+  if win32resolve and sys.platform == 'win32':
     command = _windows_resolve(command)
 
   p = subprocess.Popen(command, shell=False, stdin=stdin_pipe, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
