@@ -260,7 +260,7 @@ def _windows_resolve(command):
     # Keep this error message for later in case we fail to resolve the name
     logwarning = getattr(e, 'strerror', str(e))
 
-  if '.' in executable:
+  if '.' in command[0]:
     # Special case. The win32api may not properly check file extensions, so
     # try to resolve the executable explicitly.
     for extension in os.getenv('PATHEXT').split(os.pathsep):
