@@ -128,7 +128,7 @@ class _NonBlockingStreamReader(object):
         if line:
           self._buffer.write(line)
           if output or callback:
-            linedecode = line.decode('utf-8')
+            linedecode = line.decode('utf-8', 'replace')
             if output:
               print(linedecode)
             if callback:
