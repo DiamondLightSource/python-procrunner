@@ -19,14 +19,19 @@ def test_simple_command_invocation():
   assert result['stderr'] == b''
 
 def test_decode_invalid_utf8_input(capsys):
-  command = ['python', '-c', 'import sys;'
-             'sys.stdout.write("".join(chr(x) for x in '
-             '(0x74,0x65,0x73,0x74,0xa0,0x73,0x74,0x72,0x69,0x6e,0x67,0x0a)'
-             '))']
-  result = procrunner.run(command)
+  test_string = b'test\xa0string\n'
+  if os.name == 'nt':
+    command = ['cmd.exe', '/c', 'type', 'CON']
+  else:
+    command = ['cat']
+  result = procrunner.run(command, stdin=test_string)
   assert result['exitcode'] == 0
   assert not result['stderr']
-  assert result['stdout'] == b'test\xa0string\n'
+  if os.name == 'nt':
+    # Windows modifies line endings
+    assert result['stdout'] == test_string[:-1] + b'\r\n'
+  else:
+    assert result['stdout'] == test_string
   out, err = capsys.readouterr()
   assert out == u'test\ufffdstring\n'
   assert err == u''
