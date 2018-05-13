@@ -2,6 +2,16 @@
 History
 =======
 
+0.7.0 (2018-05-13)
+------------------
+
+* Unicode fixes. Fix crash on invalid UTF-8 input.
+* Clarify that stdout/stderr values are returned as bytestrings.
+* Callbacks receive the data decoded as UTF-8 unicode strings
+  with unknown characters replaced by \ufffd (unicode replacement
+  character). Same applies to printing of output.
+* Mark stdin broken on Windows.
+
 0.6.1 (2018-05-02)
 ------------------
 

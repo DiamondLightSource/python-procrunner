@@ -53,7 +53,7 @@ from threading import Thread
 
 __author__ = """Markus Gerstel"""
 __email__ = 'scientificsoftware@diamond.ac.uk'
-__version__ = '0.6.1'
+__version__ = '0.7.0'
 
 logger = logging.getLogger('procrunner')
 logger.addHandler(logging.NullHandler())
@@ -299,8 +299,8 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
      :param win32resolve: If on Windows, find the appropriate executable first.
                           This allows running of .bat, .cmd, etc. files without
                           explicitly specifying their extension.
-     :return: A dictionary containing stdout, stderr, runtime, exitcode,
-              and more.
+     :return: A dictionary containing stdout, stderr (both as bytestrings),
+              runtime, exitcode, and more.
   '''
 
   time_start = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
