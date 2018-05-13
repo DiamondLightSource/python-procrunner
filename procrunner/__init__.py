@@ -309,6 +309,7 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
   if stdin is None:
     stdin_pipe = None
   else:
+    assert sys.platform != 'win32', 'stdin argument not supported on Windows'
     stdin_pipe = subprocess.PIPE
 
   start_time = timeit.default_timer()

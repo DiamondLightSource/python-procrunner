@@ -21,6 +21,7 @@ def test_simple_command_invocation():
 def test_decode_invalid_utf8_input(capsys):
   test_string = b'test\xa0string\n'
   if os.name == 'nt':
+    pytest.xfail("Test requires stdin feature which does not work on Windows")
     command = ['cmd.exe', '/c', 'type', 'CON']
   else:
     command = ['cat']
