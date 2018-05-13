@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import codecs
 import copy
 import logging
 import os
@@ -67,12 +68,14 @@ class _LineAggregator(object):
     self._buffer = ''
     self._print = print_line
     self._callback = callback
+    self._decoder = codecs.getincrementaldecoder('utf-8')('replace')
   def add(self, data):
     '''Add a single character to buffer. If one or more full lines are found,
        print them (if desired) and pass to callback function.'''
-    data = data.decode('utf-8')
+    data = self._decoder.decode(data)
+    if not data: return
     self._buffer += data
-    if "\n" in data:
+    if '\n' in data:
       to_print, remainder = self._buffer.rsplit('\n')
       if self._print:
         print(to_print)
@@ -81,6 +84,7 @@ class _LineAggregator(object):
       self._buffer = remainder
   def flush(self):
     '''Print/send any remaining data to callback function.'''
+    self._buffer += self._decoder.decode(b'', final=True)
     if self._buffer:
       if self._print:
         print(self._buffer)
