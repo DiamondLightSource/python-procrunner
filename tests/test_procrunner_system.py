@@ -19,7 +19,8 @@ def test_simple_command_invocation():
   assert result['stderr'] == b''
 
 def test_decode_invalid_utf8_input(capsys):
-  command = [sys.executable, '-c', 'import sys; sys.stdout.write("".join(chr(x) for x in '
+  command = ['python', '-c', 'import sys;'
+             'sys.stdout.write("".join(chr(x) for x in '
              '(0x74,0x65,0x73,0x74,0xa0,0x73,0x74,0x72,0x69,0x6e,0x67,0x0a)'
              '))']
   result = procrunner.run(command)
