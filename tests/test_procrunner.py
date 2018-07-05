@@ -89,12 +89,12 @@ def test_pass_custom_environment_to_process(mock_subprocess):
 def test_pass_custom_environment_to_process_and_add_another_value(mock_subprocess):
   mock_subprocess.Popen.side_effect = NotImplementedError() # cut calls short
   mock_env1 = { 'keyA': mock.sentinel.keyA }
-  mock_env2 = { 'keyB': str(mock.sentinel.keyB) }
+  mock_env2 = { 'keyB': mock.sentinel.keyB, 'number': 5 }
   # Pass an environment dictionary
   with pytest.raises(NotImplementedError):
     procrunner.run(mock.Mock(), -1, False, environment=copy.copy(mock_env1), environment_override=copy.copy(mock_env2))
   mock_env_sum = copy.copy(mock_env1)
-  mock_env_sum.update(mock_env2)
+  mock_env_sum.update({key: str(mock_env2[key]) for key in mock_env2})
   assert mock_subprocess.Popen.call_args[1]['env'] == mock_env_sum
 
 
