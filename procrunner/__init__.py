@@ -322,7 +322,7 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
     env = os.environ
   if environment_override:
     env = copy.copy(env)
-    env.update({key: str(env[key]) for key in environment_override})
+    env.update({key: str(environment_override[key]) for key in environment_override})
 
   if win32resolve and sys.platform == 'win32':
     command = _windows_resolve(command)
