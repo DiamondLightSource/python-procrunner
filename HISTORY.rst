@@ -2,6 +2,11 @@
 History
 =======
 
+0.7.1 (2018-09-03)
+------------------
+
+* Accept environment variable overriding with numeric values.
+
 0.7.0 (2018-05-13)
 ------------------
 
