@@ -20,6 +20,8 @@ ProcRunner
      :target: https://pyup.io/repos/github/DiamondLightSource/python-procrunner/
      :alt: Updates
 
+.. image:: https://img.shields.io/pypi/pyversions/procrunner.svg
+     :target: https://pypi.python.org/pypi/procrunner
 
 Versatile utility function to run external processes
 
