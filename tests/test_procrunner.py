@@ -51,14 +51,16 @@ def test_run_command_runs_command_and_directs_pipelines(mock_subprocess, mock_st
     'runtime': mock.ANY,
     'timeout': False,
     'time_start': mock.ANY,
-    'time_end': mock.ANY
+    'time_end': mock.ANY,
   }
 
   actual = procrunner.run(command, 0.5, False,
-               callback_stdout=mock.sentinel.callback_stdout, callback_stderr=mock.sentinel.callback_stderr)
+               callback_stdout=mock.sentinel.callback_stdout, callback_stderr=mock.sentinel.callback_stderr,
+               working_directory=mock.sentinel.cwd)
 
   assert mock_subprocess.Popen.called
   assert mock_subprocess.Popen.call_args[1]['env'] == os.environ
+  assert mock_subprocess.Popen.call_args[1]['cwd'] == mock.sentinel.cwd
   mock_streamreader.assert_has_calls([mock.call(stream_stdout, output=mock.ANY, debug=mock.ANY, notify=mock.ANY, callback=mock.sentinel.callback_stdout),
                                       mock.call(stream_stderr, output=mock.ANY, debug=mock.ANY, notify=mock.ANY, callback=mock.sentinel.callback_stderr)],
                                      any_order=True)

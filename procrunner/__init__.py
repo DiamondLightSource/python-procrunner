@@ -280,7 +280,8 @@ def _windows_resolve(command):
 
 def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
         print_stderr=True, callback_stdout=None, callback_stderr=None,
-        environment=None, environment_override=None, win32resolve=True):
+        environment=None, environment_override=None, win32resolve=True,
+        working_directory=None):
   '''Run an external process.
 
      :param array command: Command line to be run, specified as array.
@@ -296,9 +297,12 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
      :param dict environment: The full execution environment for the command.
      :param dict environment_override: Change environment variables from the
                                        current values for command execution.
-     :param win32resolve: If on Windows, find the appropriate executable first.
-                          This allows running of .bat, .cmd, etc. files without
-                          explicitly specifying their extension.
+     :param boolean win32resolve: If on Windows, find the appropriate executable
+                                  first. This allows running of .bat, .cmd, etc.
+                                  files without explicitly specifying their
+                                  extension.
+     :param string working_directory: If specified, run the executable from
+                                      within this working directory.
      :return: A dictionary containing stdout, stderr (both as bytestrings),
               runtime, exitcode, and more.
   '''
@@ -327,7 +331,8 @@ def run(command, timeout=None, debug=False, stdin=None, print_stdout=True,
   if win32resolve and sys.platform == 'win32':
     command = _windows_resolve(command)
 
-  p = subprocess.Popen(command, shell=False, stdin=stdin_pipe, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+  p = subprocess.Popen(command, shell=False, cwd=working_directory, env=env,
+      stdin=stdin_pipe, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
   thread_pipe_pool = []
   notifyee, notifier = Pipe(False)
