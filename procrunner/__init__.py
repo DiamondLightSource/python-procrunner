@@ -53,7 +53,7 @@ from threading import Thread
 
 __author__ = """Markus Gerstel"""
 __email__ = 'scientificsoftware@diamond.ac.uk'
-__version__ = '0.7.2'
+__version__ = '0.8.0'
 
 logger = logging.getLogger('procrunner')
 logger.addHandler(logging.NullHandler())

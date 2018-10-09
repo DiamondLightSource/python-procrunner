@@ -2,6 +2,12 @@
 History
 =======
 
+0.8.0 (2018-10-09)
+------------------
+
+* Add parameter working_directory to set the working directory
+  of the subprocess
+
 0.7.2 (2018-10-05)
 ------------------
 
