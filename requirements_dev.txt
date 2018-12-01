@@ -6,7 +6,7 @@ flake8==3.6.0
 tox==3.5.3
 coverage==4.5.2
 six==1.11.0
-Sphinx==1.8.1
+Sphinx==1.8.2
 twine==1.12.1
 
 mock==2.0.0
