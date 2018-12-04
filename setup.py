@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
 import sys
+from setuptools import setup, find_packages
 
 with open("README.rst") as readme_file:
     readme = readme_file.read()
@@ -17,7 +17,10 @@ requirements = [
     'pywin32; sys_platform=="win32" and python_version>="3.5"',
 ]
 
-setup_requirements = ["pytest-runner", "six"]
+setup_requirements = []
+needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
+if needs_pytest:
+    setup_requirements.append("pytest-runner")
 
 test_requirements = ["mock", "pytest"]
 
