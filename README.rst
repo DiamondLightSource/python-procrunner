@@ -5,26 +5,33 @@ ProcRunner
 
 .. image:: https://img.shields.io/pypi/v/procrunner.svg
         :target: https://pypi.python.org/pypi/procrunner
+        :alt: PyPI release
 
 .. image:: https://travis-ci.org/DiamondLightSource/python-procrunner.svg?branch=master
         :target: https://travis-ci.org/DiamondLightSource/python-procrunner
+        :alt: Build status
 
 .. image:: https://ci.appveyor.com/api/projects/status/jtq4brwri5q18d0u/branch/master
         :target: https://ci.appveyor.com/project/Anthchirp/python-procrunner
+        :alt: Build status
 
 .. image:: https://readthedocs.org/projects/procrunner/badge/?version=latest
         :target: https://procrunner.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/DiamondLightSource/python-procrunner/shield.svg
-     :target: https://pyup.io/repos/github/DiamondLightSource/python-procrunner/
-     :alt: Updates
+        :target: https://pyup.io/repos/github/DiamondLightSource/python-procrunner/
+        :alt: Updates
 
 .. image:: https://img.shields.io/pypi/pyversions/procrunner.svg
-     :target: https://pypi.python.org/pypi/procrunner
+        :target: https://pypi.python.org/pypi/procrunner
+        :alt: Supported Python versions
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+        :target: https://github.com/ambv/black
+        :alt: Code style: black
 
 Versatile utility function to run external processes
-
 
 * Free software: BSD license
 * Documentation: https://procrunner.readthedocs.io.
