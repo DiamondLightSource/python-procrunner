@@ -166,7 +166,7 @@ class _NonBlockingStreamReader(object):
             if self._debug:
                 # Main thread overtook stream reading thread.
                 underrun_debug_timer = timeit.default_timer()
-                logger.warn("NBSR underrun")
+                logger.warning("NBSR underrun")
             self._thread.join()
             if not self.has_finished():
                 if self._debug:
@@ -268,7 +268,9 @@ def _windows_resolve(command):
                 "Resolving executable names only supported on Python 2.7 and 3.5+"
             )
         else:
-            logger.warn("Could not resolve executable name: package win32api missing")
+            logger.warning(
+                "Could not resolve executable name: package win32api missing"
+            )
         return command
 
     try:
@@ -300,7 +302,7 @@ def _windows_resolve(command):
                 if not hasattr(e, "winerror"):
                     raise
 
-    logger.warn("Error trying to resolve the executable: %s", logwarning)
+    logger.warning("Error trying to resolve the executable: %s", logwarning)
     return command
 
 
