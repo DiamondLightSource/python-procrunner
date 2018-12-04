@@ -4,12 +4,8 @@ environment:
 
     # For Python versions available on Appveyor, see
     # http://www.appveyor.com/docs/installed-software#python
-    # The list here is complete (excluding Python 2.6, which
-    # isn't covered by this document) at the time of writing.
 
     - PYTHON: "C:\\Python27"
-    - PYTHON: "C:\\Python34"
-      UNSTABLE: 1
     - PYTHON: "C:\\Python35"
       UNSTABLE: 1
     - PYTHON: "C:\\Python36"
@@ -17,8 +13,6 @@ environment:
     - PYTHON: "C:\\Python37"
       UNSTABLE: 1
     - PYTHON: "C:\\Python27-x64"
-    - PYTHON: "C:\\Python34-x64"
-      UNSTABLE: 1
     - PYTHON: "C:\\Python35-x64"
       UNSTABLE: 1
     - PYTHON: "C:\\Python36-x64"
