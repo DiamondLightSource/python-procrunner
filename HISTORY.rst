@@ -2,6 +2,13 @@
 History
 =======
 
+0.9.0 (2018-12-07)
+------------------
+
+* Trap UnicodeEncodeError when printing output. Offending characters
+  are replaced and a warning is logged once. Hints at incorrectly set
+  PYTHONIOENCODING.
+
 0.8.1 (2018-12-04)
 ------------------
 
