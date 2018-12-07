@@ -82,7 +82,13 @@ class _LineAggregator(object):
         if "\n" in data:
             to_print, remainder = self._buffer.rsplit("\n")
             if self._print:
-                print(to_print)
+                try:
+                    print(to_print)
+                except UnicodeEncodeError:
+                    print(to_print.encode(sys.getdefaultencoding(), errors="replace"))
+                    if not hasattr(self, "_warned"):
+                        logger.warning("output encoding error, characters replaced")
+                        setattr(self, "_warned", True)
             if self._callback:
                 self._callback(to_print)
             self._buffer = remainder
