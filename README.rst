@@ -7,6 +7,10 @@ ProcRunner
         :target: https://pypi.python.org/pypi/procrunner
         :alt: PyPI release
 
+.. image:: https://img.shields.io/conda/vn/conda-forge/procrunner.svg
+        :target: https://anaconda.org/conda-forge/procrunner
+        :alt: Conda Version
+
 .. image:: https://travis-ci.org/DiamondLightSource/python-procrunner.svg?branch=master
         :target: https://travis-ci.org/DiamondLightSource/python-procrunner
         :alt: Build status
