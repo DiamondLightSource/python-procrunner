@@ -53,7 +53,7 @@ from threading import Thread
 
 __author__ = """Markus Gerstel"""
 __email__ = "scientificsoftware@diamond.ac.uk"
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 
 logger = logging.getLogger("procrunner")
 logger.addHandler(logging.NullHandler())
@@ -516,7 +516,9 @@ def run(
 def run_process_dummy(command, **kwargs):
     """A stand-in function that returns a valid result dictionary indicating a
      successful execution. The external process is not run."""
-    warnings.warn("procrunner.run_process_dummy() is deprecated", DeprecationWarning)
+    warnings.warn(
+        "procrunner.run_process_dummy() is deprecated", DeprecationWarning, stacklevel=2
+    )
 
     time_start = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
     logger.info("run_process is disabled. Requested command: %s", command)
@@ -543,5 +545,6 @@ def run_process(*args, **kwargs):
     warnings.warn(
         "procrunner.run_process() is deprecated and has been renamed to run()",
         DeprecationWarning,
+        stacklevel=2,
     )
     return run(*args, **kwargs)

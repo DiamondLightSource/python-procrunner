@@ -2,6 +2,11 @@
 History
 =======
 
+0.9.1 (2019-02-22)
+------------------
+
+* Have deprecation warnings point to correct code locations
+
 0.9.0 (2018-12-07)
 ------------------
 
