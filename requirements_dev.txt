@@ -1,6 +1,6 @@
 bump2version==0.5.10
 coverage==4.5.2
-flake8==3.6.0
+flake8==3.7.7
 mock==2.0.0
 pip==18.1
 pytest==4.0.2
