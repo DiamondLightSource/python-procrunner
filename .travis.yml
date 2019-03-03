@@ -14,10 +14,10 @@ matrix:
     - python: pypy
     - os: osx
       language: generic
-      env: PYTHON=3.7.1 TOXENV=py37
+      env: PYTHON=3.7.2 TOXENV=py37
     - os: osx
       language: generic
-      env: PYTHON=3.6.7 TOXENV=py36
+      env: PYTHON=3.6.8 TOXENV=py36
     - os: osx
       language: generic
       env: PYTHON=3.5.6 TOXENV=py35
