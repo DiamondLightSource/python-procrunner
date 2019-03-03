@@ -125,9 +125,9 @@ class _NonBlockingStreamReader(object):
                     if char:
                         self._buffer.write(char)
                         la.add(char)
-                else:
-                    if self._closing:
-                        break
+                elif self._closing:
+                    break
+                if self._closed: break
             self._terminated = True
             la.flush()
             if self._debug:
@@ -166,28 +166,24 @@ class _NonBlockingStreamReader(object):
 
     def get_output(self):
         """Retrieve the stored data in full.
-           This call may block if the reading thread has not yet terminated."""
+           This call may block and return partial data if the reading thread
+           has not yet terminated. These cases can happen eg. if the subprocess
+           spawns a daemon and hands over stdout/stderr handles, or if the
+           stream thread callback handlers do not finish in time.
+        """
         self._closing = True
         if not self.has_finished():
-            if self._debug:
-                # Main thread overtook stream reading thread.
-                underrun_debug_timer = timeit.default_timer()
-                logger.warning("NBSR underrun")
-            self._thread.join()
+            logger.info("Main thread overtook stream reading thread.")
+            self._thread.join(1)
             if not self.has_finished():
-                if self._debug:
-                    logger.debug(
-                        "NBSR join after %f seconds, underrun not resolved"
-                        % (timeit.default_timer() - underrun_debug_timer)
-                    )
-                raise Exception("thread did not terminate")
-            if self._debug:
-                logger.debug(
-                    "NBSR underrun resolved after %f seconds"
-                    % (timeit.default_timer() - underrun_debug_timer)
+                logger.warning(
+                    "Stream reading thread did not finish in time. "
+                    "Some stream output may have been lost."
                 )
+                if self._debug:
+                    raise RuntimeError("thread did not terminate")
         if self._closed:
-            raise Exception("streamreader double-closed")
+            raise RuntimeError("streamreader double-closed")
         self._closed = True
         data = self._buffer.getvalue()
         self._buffer.close()
