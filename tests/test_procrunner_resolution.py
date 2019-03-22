@@ -3,8 +3,72 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 
+import mock
 import procrunner
 import pytest
+
+
+@pytest.mark.parametrize(
+    "obj",
+    (
+        None,
+        True,
+        False,
+        1,
+        1.0,
+        [],
+        [None],
+        [True],
+        [1],
+        ["thing"],
+        {},
+        {None},
+        {True},
+        {1},
+        {1: None},
+        {1: True},
+        {1: 1},
+        {1: "thing"},
+        {"thing": "thing"},
+        "string",
+        b"bytes",
+        RuntimeError(),
+    ),
+)
+def test_path_object_resolution_for_non_path_objs_does_not_modify_objects(obj):
+    assert procrunner._path_resolve(obj) is obj
+
+
+def PEP519(path):
+    class MockObject:
+        @staticmethod
+        def __fspath__():
+            return path
+
+        def __repr__(self):
+            return "<path object: %s>" % path
+
+    return MockObject()
+
+
+@pytest.mark.parametrize(
+    "raw,resolved",
+    (
+        (PEP519("/tmp/file"), "/tmp/file"),
+        (["thing", 2, PEP519("thing")], ["thing", 2, "thing"]),
+        ([PEP519("thing"), [PEP519("other")]], ["thing", ["other"]]),
+        ([PEP519("thing"), (3, PEP519("other"))], ["thing", (3, "other")]),
+        ({PEP519("thing")}, {"thing"}),
+        ({PEP519("thing"), PEP519("thing")}, {"thing"}),
+        (
+            {7: PEP519("thing"), "banana": PEP519("other")},
+            {7: "thing", "banana": "other"},
+        ),
+        ({PEP519("thing"): PEP519("other")}, {"thing": "other"}),
+    ),
+)
+def test_path_object_resolution_of_path_objects(raw, resolved):
+    assert procrunner._path_resolve(raw) == resolved
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="windows specific test only")

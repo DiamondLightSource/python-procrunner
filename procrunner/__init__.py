@@ -3,6 +3,7 @@
 from __future__ import absolute_import, division, print_function
 
 import codecs
+import collections
 import copy
 import logging
 import os
@@ -260,6 +261,45 @@ class _NonBlockingStreamWriter(object):
         return self._buffer_len - self._buffer_pos
 
 
+def _path_resolve(obj):
+    """
+    Recursively resolve file system path (PEP-519) objects to strings.
+
+    :param obj: A file system path object or something else, including a data
+                structure of lists and dictionaries containing file system
+                path objects or other objects.
+    :return: The originally passed data structure with all file system path
+             objects resolved to strings.
+    """
+    if not obj:
+        return obj
+    if hasattr(obj, "__fspath__"):
+        return obj.__fspath__()
+    if isinstance(obj, collections.MutableSet):
+        for k in list(obj):
+            k_r = _path_resolve(k)
+            if k_r is not k:
+                obj.discard(k)
+                obj.add(k_r)
+    elif isinstance(obj, collections.MutableMapping):
+        for k in list(obj):
+            v_r = _path_resolve(obj[k])
+            k_r = _path_resolve(k)
+            if k_r is not k:
+                del obj[k]
+                obj[k_r] = v_r
+            elif v_r is not obj[k]:
+                obj[k] = v_r
+    elif isinstance(obj, collections.MutableSequence):
+        for k in list(obj):
+            k_r = _path_resolve(k)
+            if k_r is not k:
+                obj[obj.index(k)] = k_r
+    elif type(obj) is tuple:
+        return tuple(_path_resolve(e) for e in obj)
+    return obj
+
+
 def _windows_resolve(command):
     """
     Try and find the full path and file extension of the executable to run.
@@ -384,6 +424,7 @@ def run(
             {key: str(environment_override[key]) for key in environment_override}
         )
 
+    command = _path_resolve(command)
     if win32resolve and sys.platform == "win32":
         command = _windows_resolve(command)
 
