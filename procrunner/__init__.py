@@ -415,23 +415,26 @@ def run(
         max_time = start_time + timeout
 
     if environment is not None:
-        env = environment
+        env = _path_resolve(copy.copy(environment))
     else:
         env = os.environ
     if environment_override:
         env = copy.copy(env)
         env.update(
-            {key: str(environment_override[key]) for key in environment_override}
+            {
+                _path_resolve(key): str(_path_resolve(environment_override[key]))
+                for key in environment_override
+            }
         )
 
-    command = _path_resolve(command)
+    command = _path_resolve(copy.copy(command))
     if win32resolve and sys.platform == "win32":
         command = _windows_resolve(command)
 
     p = subprocess.Popen(
         command,
         shell=False,
-        cwd=working_directory,
+        cwd=_path_resolve(working_directory),
         env=env,
         stdin=stdin_pipe,
         stdout=subprocess.PIPE,
