@@ -24,3 +24,7 @@ To run with a specific environment variable set::
 To run with a specific environment::
 
     result = procrunner.run(..., environment={ 'VARIABLE': 'value' })
+
+To run in a specific directory::
+
+    result = procrunner.run(..., working_directory='/some/path')
