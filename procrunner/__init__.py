@@ -378,6 +378,9 @@ def run(
     """
     Run an external process.
 
+    File system path objects (PEP-519) are accepted in the command, environment,
+    and working directory arguments.
+
     :param array command: Command line to be run, specified as array.
     :param timeout: Terminate program execution after this many seconds.
     :param boolean debug: Enable further debug messages.
