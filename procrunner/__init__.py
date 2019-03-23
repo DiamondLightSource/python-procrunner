@@ -303,16 +303,9 @@ def _windows_resolve(command):
         return command
 
     try:
-        # Ensure the command parameter is iterable.
-        iter(command)
-    except TypeError:
-        # If it is not iterable it could be a Mock(). Return it untouched.
-        return command
-
-    try:
         _, found_executable = win32api.FindExecutable(command[0])
         logger.debug("Resolved %s as %s", command[0], found_executable)
-        return [found_executable] + command[1:]
+        return (found_executable,) + tuple(command[1:])
     except Exception as e:
         if not hasattr(e, "winerror"):
             raise
@@ -326,7 +319,7 @@ def _windows_resolve(command):
             try:
                 _, found_executable = win32api.FindExecutable(command[0] + extension)
                 logger.debug("Resolved %s as %s", command[0], found_executable)
-                return [found_executable] + command[1:]
+                return (found_executable,) + tuple(command[1:])
             except Exception as e:
                 if not hasattr(e, "winerror"):
                     raise
