@@ -23,9 +23,6 @@ matrix:
       env: CONDA=3.5 TOXENV=py35
     - os: osx
       language: generic
-      env: CONDA=3.4 TOXENV=py34
-    - os: osx
-      language: generic
       env: CONDA=2.7 TOXENV=py27
 
   allow_failures:
