@@ -3,10 +3,6 @@
 from __future__ import absolute_import, division, print_function
 
 import codecs
-try:
-    import collections.abc as cabc
-except ImportError:
-    import collections as cabc  # Python 2.7
 import copy
 import logging
 import os
@@ -266,40 +262,15 @@ class _NonBlockingStreamWriter(object):
 
 def _path_resolve(obj):
     """
-    Recursively resolve file system path (PEP-519) objects to strings.
+    Resolve file system path (PEP-519) objects to strings.
 
-    :param obj: A file system path object or something else, including a data
-                structure of lists and dictionaries containing file system
-                path objects or other objects.
-    :return: The originally passed data structure with all file system path
-             objects resolved to strings.
+    :param obj: A file system path object or something else.
+    :return: A string representation of a file system path object or, for
+             anything that was not a file system path object, the original
+             object.
     """
-    if not obj:
-        return obj
-    if hasattr(obj, "__fspath__"):
+    if obj and hasattr(obj, "__fspath__"):
         return obj.__fspath__()
-    if isinstance(obj, cabc.MutableSet):
-        for k in list(obj):
-            k_r = _path_resolve(k)
-            if k_r is not k:
-                obj.discard(k)
-                obj.add(k_r)
-    elif isinstance(obj, cabc.MutableMapping):
-        for k in list(obj):
-            v_r = _path_resolve(obj[k])
-            k_r = _path_resolve(k)
-            if k_r is not k:
-                del obj[k]
-                obj[k_r] = v_r
-            elif v_r is not obj[k]:
-                obj[k] = v_r
-    elif isinstance(obj, cabc.MutableSequence):
-        for k in list(obj):
-            k_r = _path_resolve(k)
-            if k_r is not k:
-                obj[obj.index(k)] = k_r
-    elif type(obj) is tuple:
-        return tuple(_path_resolve(e) for e in obj)
     return obj
 
 
@@ -421,19 +392,19 @@ def run(
         max_time = start_time + timeout
 
     if environment is not None:
-        env = _path_resolve(copy.copy(environment))
+        env = {key: _path_resolve(environment[key]) for key in environment}
     else:
         env = os.environ
     if environment_override:
         env = copy.copy(env)
         env.update(
             {
-                _path_resolve(key): str(_path_resolve(environment_override[key]))
+                key: str(_path_resolve(environment_override[key]))
                 for key in environment_override
             }
         )
 
-    command = _path_resolve(copy.copy(command))
+    command = tuple(_path_resolve(part) for part in command)
     if win32resolve and sys.platform == "win32":
         command = _windows_resolve(command)
 
