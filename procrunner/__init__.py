@@ -3,7 +3,10 @@
 from __future__ import absolute_import, division, print_function
 
 import codecs
-import collections
+try:
+    import collections.abc as cabc
+except ImportError:
+    import collections as cabc  # Python 2.7
 import copy
 import logging
 import os
@@ -275,13 +278,13 @@ def _path_resolve(obj):
         return obj
     if hasattr(obj, "__fspath__"):
         return obj.__fspath__()
-    if isinstance(obj, collections.MutableSet):
+    if isinstance(obj, cabc.MutableSet):
         for k in list(obj):
             k_r = _path_resolve(k)
             if k_r is not k:
                 obj.discard(k)
                 obj.add(k_r)
-    elif isinstance(obj, collections.MutableMapping):
+    elif isinstance(obj, cabc.MutableMapping):
         for k in list(obj):
             v_r = _path_resolve(obj[k])
             k_r = _path_resolve(k)
@@ -290,7 +293,7 @@ def _path_resolve(obj):
                 obj[k_r] = v_r
             elif v_r is not obj[k]:
                 obj[k] = v_r
-    elif isinstance(obj, collections.MutableSequence):
+    elif isinstance(obj, cabc.MutableSequence):
         for k in list(obj):
             k_r = _path_resolve(k)
             if k_r is not k:
