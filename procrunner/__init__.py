@@ -302,6 +302,9 @@ def _windows_resolve(command):
             )
         return command
 
+    if not command or not isinstance(command[0], six.string_types):
+        return command
+
     try:
         _, found_executable = win32api.FindExecutable(command[0])
         logger.debug("Resolved %s as %s", command[0], found_executable)
