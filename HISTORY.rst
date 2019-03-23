@@ -2,6 +2,11 @@
 History
 =======
 
+1.0.0 (2019-03-xx)
+------------------
+
+* Support file system path objects (PEP-519) in arguments
+
 0.9.1 (2019-02-22)
 ------------------
 

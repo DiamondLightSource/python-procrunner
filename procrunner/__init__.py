@@ -60,10 +60,12 @@ logger.addHandler(logging.NullHandler())
 
 
 class _LineAggregator(object):
-    """Buffer that can be filled with stream data and will aggregate complete
-       lines. Lines can be printed or passed to an arbitrary callback function.
-       The lines passed to the callback function are UTF-8 decoded and do not
-       contain a trailing newline character."""
+    """
+    Buffer that can be filled with stream data and will aggregate complete
+    lines. Lines can be printed or passed to an arbitrary callback function.
+    The lines passed to the callback function are UTF-8 decoded and do not
+    contain a trailing newline character.
+    """
 
     def __init__(self, print_line=False, callback=None):
         """Create aggregator object."""
@@ -73,8 +75,10 @@ class _LineAggregator(object):
         self._decoder = codecs.getincrementaldecoder("utf-8")("replace")
 
     def add(self, data):
-        """Add a single character to buffer. If one or more full lines are found,
-           print them (if desired) and pass to callback function."""
+        """
+        Add a single character to buffer. If one or more full lines are found,
+        print them (if desired) and pass to callback function.
+        """
         data = self._decoder.decode(data)
         if not data:
             return
@@ -161,12 +165,16 @@ class _NonBlockingStreamReader(object):
         self._thread.start()
 
     def has_finished(self):
-        """Returns whether the thread reading from the stream is still alive."""
+        """
+        Returns whether the thread reading from the stream is still alive.
+        """
         return self._terminated
 
     def get_output(self):
-        """Retrieve the stored data in full.
-           This call may block if the reading thread has not yet terminated."""
+        """
+        Retrieve the stored data in full.
+        This call may block if the reading thread has not yet terminated.
+        """
         self._closing = True
         if not self.has_finished():
             if self._debug:
@@ -252,20 +260,35 @@ class _NonBlockingStreamWriter(object):
         return self._buffer_len - self._buffer_pos
 
 
-def _windows_resolve(command):
-    """Try and find the full path and file extension of the executable to run.
-       This is so that e.g. calls to 'somescript' will point at 'somescript.cmd'
-       without the need to set shell=True in the subprocess.
-       If the executable contains periods it is a special case. Here the
-       win32api call will fail to resolve the extension automatically, and it
-       has do be done explicitly.
+def _path_resolve(obj):
+    """
+    Resolve file system path (PEP-519) objects to strings.
 
-       :param command: The command array to be run, with the first element being
-                       the command with or w/o path, with or w/o extension.
-       :return: Returns the command array with the executable resolved with the
-                correct extension. If the executable cannot be resolved for any
-                reason the original command array is returned.
-  """
+    :param obj: A file system path object or something else.
+    :return: A string representation of a file system path object or, for
+             anything that was not a file system path object, the original
+             object.
+    """
+    if obj and hasattr(obj, "__fspath__"):
+        return obj.__fspath__()
+    return obj
+
+
+def _windows_resolve(command):
+    """
+    Try and find the full path and file extension of the executable to run.
+    This is so that e.g. calls to 'somescript' will point at 'somescript.cmd'
+    without the need to set shell=True in the subprocess.
+    If the executable contains periods it is a special case. Here the
+    win32api call will fail to resolve the extension automatically, and it
+    has do be done explicitly.
+
+    :param command: The command array to be run, with the first element being
+                    the command with or w/o path, with or w/o extension.
+    :return: Returns the command array with the executable resolved with the
+             correct extension. If the executable cannot be resolved for any
+             reason the original command array is returned.
+    """
     try:
         import win32api
     except ImportError:
@@ -279,17 +302,13 @@ def _windows_resolve(command):
             )
         return command
 
-    try:
-        # Ensure the command parameter is iterable.
-        iter(command)
-    except TypeError:
-        # If it is not iterable it could be a Mock(). Return it untouched.
+    if not command or not isinstance(command[0], six.string_types):
         return command
 
     try:
         _, found_executable = win32api.FindExecutable(command[0])
         logger.debug("Resolved %s as %s", command[0], found_executable)
-        return [found_executable] + command[1:]
+        return (found_executable,) + tuple(command[1:])
     except Exception as e:
         if not hasattr(e, "winerror"):
             raise
@@ -303,7 +322,7 @@ def _windows_resolve(command):
             try:
                 _, found_executable = win32api.FindExecutable(command[0] + extension)
                 logger.debug("Resolved %s as %s", command[0], found_executable)
-                return [found_executable] + command[1:]
+                return (found_executable,) + tuple(command[1:])
             except Exception as e:
                 if not hasattr(e, "winerror"):
                     raise
@@ -326,30 +345,34 @@ def run(
     win32resolve=True,
     working_directory=None,
 ):
-    """Run an external process.
+    """
+    Run an external process.
 
-       :param array command: Command line to be run, specified as array.
-       :param timeout: Terminate program execution after this many seconds.
-       :param boolean debug: Enable further debug messages.
-       :param stdin: Optional string that is passed to command stdin.
-       :param boolean print_stdout: Pass stdout through to sys.stdout.
-       :param boolean print_stderr: Pass stderr through to sys.stderr.
-       :param callback_stdout: Optional function which is called for each
-                               stdout line.
-       :param callback_stderr: Optional function which is called for each
-                               stderr line.
-       :param dict environment: The full execution environment for the command.
-       :param dict environment_override: Change environment variables from the
-                                         current values for command execution.
-       :param boolean win32resolve: If on Windows, find the appropriate executable
-                                    first. This allows running of .bat, .cmd, etc.
-                                    files without explicitly specifying their
-                                    extension.
-       :param string working_directory: If specified, run the executable from
-                                        within this working directory.
-       :return: A dictionary containing stdout, stderr (both as bytestrings),
-                runtime, exitcode, and more.
-  """
+    File system path objects (PEP-519) are accepted in the command, environment,
+    and working directory arguments.
+
+    :param array command: Command line to be run, specified as array.
+    :param timeout: Terminate program execution after this many seconds.
+    :param boolean debug: Enable further debug messages.
+    :param stdin: Optional string that is passed to command stdin.
+    :param boolean print_stdout: Pass stdout through to sys.stdout.
+    :param boolean print_stderr: Pass stderr through to sys.stderr.
+    :param callback_stdout: Optional function which is called for each
+                            stdout line.
+    :param callback_stderr: Optional function which is called for each
+                            stderr line.
+    :param dict environment: The full execution environment for the command.
+    :param dict environment_override: Change environment variables from the
+                                      current values for command execution.
+    :param boolean win32resolve: If on Windows, find the appropriate executable
+                                 first. This allows running of .bat, .cmd, etc.
+                                 files without explicitly specifying their
+                                 extension.
+    :param string working_directory: If specified, run the executable from
+                                     within this working directory.
+    :return: A dictionary containing stdout, stderr (both as bytestrings),
+             runtime, exitcode, and more.
+    """
 
     time_start = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
     logger.debug("Starting external process: %s", command)
@@ -365,22 +388,26 @@ def run(
         max_time = start_time + timeout
 
     if environment is not None:
-        env = environment
+        env = {key: _path_resolve(environment[key]) for key in environment}
     else:
         env = os.environ
     if environment_override:
         env = copy.copy(env)
         env.update(
-            {key: str(environment_override[key]) for key in environment_override}
+            {
+                key: str(_path_resolve(environment_override[key]))
+                for key in environment_override
+            }
         )
 
+    command = tuple(_path_resolve(part) for part in command)
     if win32resolve and sys.platform == "win32":
         command = _windows_resolve(command)
 
     p = subprocess.Popen(
         command,
         shell=False,
-        cwd=working_directory,
+        cwd=_path_resolve(working_directory),
         env=env,
         stdin=stdin_pipe,
         stdout=subprocess.PIPE,
@@ -514,8 +541,10 @@ def run(
 
 
 def run_process_dummy(command, **kwargs):
-    """A stand-in function that returns a valid result dictionary indicating a
-       successful execution. The external process is not run."""
+    """
+    A stand-in function that returns a valid result dictionary indicating a
+    successful execution. The external process is not run.
+    """
     warnings.warn(
         "procrunner.run_process_dummy() is deprecated", DeprecationWarning, stacklevel=2
     )

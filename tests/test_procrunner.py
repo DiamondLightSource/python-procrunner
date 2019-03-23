@@ -54,7 +54,7 @@ def test_run_command_runs_command_and_directs_pipelines(
         "stderr": mock.sentinel.proc_stderr,
         "stdout": mock.sentinel.proc_stdout,
         "exitcode": mock_process.returncode,
-        "command": command,
+        "command": tuple(command),
         "runtime": mock.ANY,
         "timeout": False,
         "time_start": mock.ANY,
@@ -101,7 +101,7 @@ def test_run_command_runs_command_and_directs_pipelines(
 def test_default_process_environment_is_parent_environment(mock_subprocess):
     mock_subprocess.Popen.side_effect = NotImplementedError()  # cut calls short
     with pytest.raises(NotImplementedError):
-        procrunner.run(mock.Mock(), -1, False)
+        procrunner.run([mock.Mock()], -1, False)
     assert mock_subprocess.Popen.call_args[1]["env"] == os.environ
 
 
@@ -111,7 +111,7 @@ def test_pass_custom_environment_to_process(mock_subprocess):
     mock_env = {"key": mock.sentinel.key}
     # Pass an environment dictionary
     with pytest.raises(NotImplementedError):
-        procrunner.run(mock.Mock(), -1, False, environment=copy.copy(mock_env))
+        procrunner.run([mock.Mock()], -1, False, environment=copy.copy(mock_env))
     assert mock_subprocess.Popen.call_args[1]["env"] == mock_env
 
 
@@ -123,7 +123,7 @@ def test_pass_custom_environment_to_process_and_add_another_value(mock_subproces
     # Pass an environment dictionary
     with pytest.raises(NotImplementedError):
         procrunner.run(
-            mock.Mock(),
+            [mock.Mock()],
             -1,
             False,
             environment=copy.copy(mock_env1),
@@ -140,7 +140,7 @@ def test_use_default_process_environment_and_add_another_value(mock_subprocess):
     mock_env2 = {"keyB": str(mock.sentinel.keyB)}
     with pytest.raises(NotImplementedError):
         procrunner.run(
-            mock.Mock(), -1, False, environment_override=copy.copy(mock_env2)
+            [mock.Mock()], -1, False, environment_override=copy.copy(mock_env2)
         )
     random_environment_variable = list(os.environ)[0]
     if random_environment_variable == list(mock_env2)[0]:
@@ -166,7 +166,7 @@ def test_use_default_process_environment_and_override_a_value(mock_subprocess):
     random_environment_value = os.getenv(random_environment_variable)
     with pytest.raises(NotImplementedError):
         procrunner.run(
-            mock.Mock(),
+            [mock.Mock()],
             -1,
             False,
             environment_override={
