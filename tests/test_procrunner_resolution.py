@@ -62,7 +62,7 @@ def test_name_resolution_for_simple_exe():
     assert os.path.exists(resolved[0])
 
     # parameters are unchanged
-    assert resolved[1:] == command[1:]
+    assert resolved[1:] == tuple(command[1:])
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="windows specific test only")
