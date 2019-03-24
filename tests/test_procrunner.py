@@ -254,3 +254,54 @@ def test_lineaggregator_aggregates_data():
     callback.assert_not_called()
     aggregator.flush()
     callback.assert_called_once_with("morestuff")
+
+
+def test_return_object_semantics():
+    ro = procrunner.ReturnObject(
+        {
+            "command": mock.sentinel.command,
+            "exitcode": 0,
+            "stdout": mock.sentinel.stdout,
+            "stderr": mock.sentinel.stderr,
+        }
+    )
+    assert ro["command"] == mock.sentinel.command
+    assert ro.args == mock.sentinel.command
+    assert ro["exitcode"] == 0
+    assert ro.returncode == 0
+    assert ro["stdout"] == mock.sentinel.stdout
+    assert ro.stdout == mock.sentinel.stdout
+    assert ro["stderr"] == mock.sentinel.stderr
+    assert ro.stderr == mock.sentinel.stderr
+
+    with pytest.raises(KeyError):
+        ro["unknownkey"]
+    ro.update({"unknownkey": mock.sentinel.key})
+    assert ro["unknownkey"] == mock.sentinel.key
+
+
+def test_return_object_check_function_passes_on_success():
+    ro = procrunner.ReturnObject(
+        {
+            "command": mock.sentinel.command,
+            "exitcode": 0,
+            "stdout": mock.sentinel.stdout,
+            "stderr": mock.sentinel.stderr,
+        }
+    )
+    ro.check_returncode()
+
+
+def test_return_object_check_function_raises_on_error():
+    ro = procrunner.ReturnObject(
+        {
+            "command": mock.sentinel.command,
+            "exitcode": 1,
+            "stdout": mock.sentinel.stdout,
+            "stderr": mock.sentinel.stderr,
+        }
+    )
+    with pytest.raises(Exception) as e:
+        ro.check_returncode()
+    assert repr(mock.sentinel.command) in str(e.value)
+    assert "1" in str(e.value)

@@ -331,6 +331,30 @@ def _windows_resolve(command):
     return command
 
 
+if sys.version_info < (3, 5):
+
+    class _ReturnObjectParent(object):
+        def check_returncode(self):
+            if self.returncode:
+                raise Exception(
+                    "Call %r resulted in non-zero exit code %r"
+                    % (self.args, self.returncode)
+                )
+
+
+else:
+    _ReturnObjectParent = subprocess.CompletedProcess
+
+
+class ReturnObject(dict, _ReturnObjectParent):
+    def __init__(self, *arg, **kw):
+        super(ReturnObject, self).__init__(*arg, **kw)
+        self.args = self["command"]
+        self.returncode = self["exitcode"]
+        self.stdout = self["stdout"]
+        self.stderr = self["stderr"]
+
+
 def run(
     command,
     timeout=None,
