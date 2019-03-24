@@ -94,7 +94,12 @@ def test_run_command_runs_command_and_directs_pipelines(
     )
     assert not mock_process.terminate.called
     assert not mock_process.kill.called
-    assert actual == expected
+    for key in expected:
+        assert actual[key] == expected[key]
+    assert actual.args == tuple(command)
+    assert actual.returncode == mock_process.returncode
+    assert actual.stdout == mock.sentinel.proc_stdout
+    assert actual.stderr == mock.sentinel.proc_stderr
 
 
 @mock.patch("procrunner.subprocess")
