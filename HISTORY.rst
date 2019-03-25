@@ -6,6 +6,8 @@ History
 ------------------
 
 * Support file system path objects (PEP-519) in arguments
+* Change the return object to make it similar to
+  subprocess.CompletedProcess, introduced with Python 3.5+
 
 0.9.1 (2019-02-22)
 ------------------

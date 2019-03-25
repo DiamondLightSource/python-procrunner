@@ -331,6 +331,39 @@ def _windows_resolve(command):
     return command
 
 
+if sys.version_info < (3, 5):
+
+    class _ReturnObjectParent(object):
+        def check_returncode(self):
+            if self.returncode:
+                raise Exception(
+                    "Call %r resulted in non-zero exit code %r"
+                    % (self.args, self.returncode)
+                )
+
+
+else:
+    _ReturnObjectParent = subprocess.CompletedProcess
+
+
+class ReturnObject(dict, _ReturnObjectParent):
+    """
+    A subprocess.CompletedProcess-like object containing the executed
+    command, stdout and stderr (both as bytestrings), and the exitcode.
+    Further values such as process runtime can be accessed as dictionary
+    values.
+    The check_returncode() function raises an exception if the process
+    exited with a non-zero exit code.
+    """
+
+    def __init__(self, *arg, **kw):
+        super(ReturnObject, self).__init__(*arg, **kw)
+        self.args = self["command"]
+        self.returncode = self["exitcode"]
+        self.stdout = self["stdout"]
+        self.stderr = self["stderr"]
+
+
 def run(
     command,
     timeout=None,
@@ -370,8 +403,9 @@ def run(
                                  extension.
     :param string working_directory: If specified, run the executable from
                                      within this working directory.
-    :return: A dictionary containing stdout, stderr (both as bytestrings),
-             runtime, exitcode, and more.
+    :return: A ReturnObject() containing the executed command, stdout and stderr
+             (both as bytestrings), and the exitcode. Further values such as
+             process runtime can be accessed as dictionary values.
     """
 
     time_start = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
@@ -519,16 +553,18 @@ def run(
     stderr = stderr.get_output()
     time_end = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
 
-    result = {
-        "exitcode": p.returncode,
-        "command": command,
-        "stdout": stdout,
-        "stderr": stderr,
-        "timeout": timeout_encountered,
-        "runtime": runtime,
-        "time_start": time_start,
-        "time_end": time_end,
-    }
+    result = ReturnObject(
+        {
+            "exitcode": p.returncode,
+            "command": command,
+            "stdout": stdout,
+            "stderr": stderr,
+            "timeout": timeout_encountered,
+            "runtime": runtime,
+            "time_start": time_start,
+            "time_end": time_end,
+        }
+    )
     if stdin is not None:
         result.update(
             {
@@ -552,16 +588,18 @@ def run_process_dummy(command, **kwargs):
     time_start = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
     logger.info("run_process is disabled. Requested command: %s", command)
 
-    result = {
-        "exitcode": 0,
-        "command": command,
-        "stdout": "",
-        "stderr": "",
-        "timeout": False,
-        "runtime": 0,
-        "time_start": time_start,
-        "time_end": time_start,
-    }
+    result = ReturnObject(
+        {
+            "exitcode": 0,
+            "command": command,
+            "stdout": "",
+            "stderr": "",
+            "timeout": False,
+            "runtime": 0,
+            "time_start": time_start,
+            "time_end": time_start,
+        }
+    )
     if kwargs.get("stdin") is not None:
         result.update(
             {"stdin_bytes_sent": len(kwargs["stdin"]), "stdin_bytes_remain": 0}

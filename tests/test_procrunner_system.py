@@ -15,9 +15,9 @@ def test_simple_command_invocation():
 
     result = procrunner.run(command)
 
-    assert result["exitcode"] == 0
-    assert result["stdout"] == b"hello" + os.linesep.encode("utf-8")
-    assert result["stderr"] == b""
+    assert result.returncode == 0
+    assert result.stdout == b"hello" + os.linesep.encode("utf-8")
+    assert result.stderr == b""
 
 
 def test_decode_invalid_utf8_input(capsys):
@@ -28,13 +28,13 @@ def test_decode_invalid_utf8_input(capsys):
     else:
         command = ["cat"]
     result = procrunner.run(command, stdin=test_string)
-    assert result["exitcode"] == 0
-    assert not result["stderr"]
+    assert result.returncode == 0
+    assert not result.stderr
     if os.name == "nt":
         # Windows modifies line endings
-        assert result["stdout"] == test_string[:-1] + b"\r\n"
+        assert result.stdout == test_string[:-1] + b"\r\n"
     else:
-        assert result["stdout"] == test_string
+        assert result.stdout == test_string
     out, err = capsys.readouterr()
     assert out == u"test\ufffdstring\n"
     assert err == u""
@@ -49,21 +49,20 @@ def test_running_wget(tmpdir):
         if e.errno == 2:
             pytest.skip("wget not available")
         raise
-    assert result["exitcode"] == 0
-    assert b"http" in result["stderr"]
-    assert b"google" in result["stdout"]
+    assert result.returncode == 0
+    assert b"http" in result.stderr
+    assert b"google" in result.stdout
 
 
 def test_path_object_resolution(tmpdir):
-    sentinel_value = "sentinel"
+    sentinel_value = b"sentinel"
     tmpdir.join("tempfile").write(sentinel_value)
     tmpdir.join("reader.py").write("print(open('tempfile').read())")
-    command = [sys.executable, tmpdir.join("reader.py")]
     result = procrunner.run(
-        command,
+        [sys.executable, tmpdir.join("reader.py")],
         environment_override={"PYTHONHASHSEED": "random"},
         working_directory=tmpdir,
     )
-    assert result["exitcode"] == 0
-    assert not result["stderr"]
-    assert sentinel_value == result["stdout"].strip().decode()
+    assert result.returncode == 0
+    assert not result.stderr
+    assert sentinel_value == result.stdout.strip()
