@@ -59,7 +59,11 @@ def test_path_object_resolution(tmpdir):
     tmpdir.join("tempfile").write(sentinel_value)
     tmpdir.join("reader.py").write("print(open('tempfile').read())")
     command = [sys.executable, tmpdir.join("reader.py")]
-    result = procrunner.run(command, working_directory=tmpdir)
+    result = procrunner.run(
+        command,
+        environment_override={"PYTHONHASHSEED": "random"},
+        working_directory=tmpdir,
+    )
     assert result["exitcode"] == 0
     assert not result["stderr"]
     assert sentinel_value == result["stdout"].strip().decode()
