@@ -52,3 +52,14 @@ def test_running_wget(tmpdir):
     assert result["exitcode"] == 0
     assert b"http" in result["stderr"]
     assert b"google" in result["stdout"]
+
+
+def test_path_object_resolution(tmpdir):
+    sentinel_value = "sentinel"
+    tmpdir.join("tempfile").write(sentinel_value)
+    tmpdir.join("reader.py").write("print(open('tempfile').read())")
+    command = ["python", tmpdir.join("reader.py")]
+    result = procrunner.run(command, working_directory=tmpdir)
+    assert result["exitcode"] == 0
+    assert not result["stderr"]
+    assert sentinel_value == result["stdout"].strip()
