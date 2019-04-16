@@ -363,6 +363,20 @@ class ReturnObject(dict, _ReturnObjectParent):
         self.stdout = self["stdout"]
         self.stderr = self["stderr"]
 
+    def __eq__(self, other):
+        """Override equality operator to account for added fields"""
+        if type(other) is type(self):
+            return self.__dict__ == other.__dict__
+        return False
+
+    def __hash__(self):
+        """This object is not immutable, so mark it as unhashable"""
+        return None
+
+    def __ne__(self, other):
+        """Overrides the default implementation (unnecessary in Python 3)"""
+        return not self.__eq__(other)
+
 
 def run(
     command,
