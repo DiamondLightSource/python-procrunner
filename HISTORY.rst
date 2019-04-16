@@ -2,6 +2,12 @@
 History
 =======
 
+1.0.1 (2019-04-16)
+------------------
+
+* Minor fixes on the return object (implement equality,
+  mark as unhashable)
+
 1.0.0 (2019-03-25)
 ------------------
 
