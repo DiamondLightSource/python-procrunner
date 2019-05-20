@@ -58,11 +58,15 @@ def test_path_object_resolution(tmpdir):
     sentinel_value = b"sentinel"
     tmpdir.join("tempfile").write(sentinel_value)
     tmpdir.join("reader.py").write("print(open('tempfile').read())")
+    assert "LEAK_DETECTOR" not in os.environ
     result = procrunner.run(
         [sys.executable, tmpdir.join("reader.py")],
-        environment_override={"PYTHONHASHSEED": "random"},
+        environment_override={"PYTHONHASHSEED": "random", "LEAK_DETECTOR": "1"},
         working_directory=tmpdir,
     )
     assert result.returncode == 0
     assert not result.stderr
     assert sentinel_value == result.stdout.strip()
+    assert (
+        "LEAK_DETECTOR" not in os.environ
+    ), "overridden environment variable leaked into parent process"

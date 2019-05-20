@@ -3,7 +3,6 @@
 from __future__ import absolute_import, division, print_function
 
 import codecs
-import copy
 import logging
 import os
 import select
@@ -438,9 +437,8 @@ def run(
     if environment is not None:
         env = {key: _path_resolve(environment[key]) for key in environment}
     else:
-        env = os.environ
+        env = {key: value for key, value in os.environ.items()}
     if environment_override:
-        env = copy.copy(env)
         env.update(
             {
                 key: str(_path_resolve(environment_override[key]))

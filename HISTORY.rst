@@ -2,6 +2,11 @@
 History
 =======
 
+1.0.2 (2019-05-20)
+------------------
+
+* Stop environment override variables leaking into the process environment
+
 1.0.1 (2019-04-16)
 ------------------
 
