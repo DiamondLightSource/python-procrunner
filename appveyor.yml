@@ -27,6 +27,7 @@ matrix:
 install:
   # Upgrade to the latest pip.
   - '%PYTHON%\\python.exe -m pip install -U pip setuptools wheel'
+  - '%PYTHON%\\python.exe -m pip install -r requirements_dev.txt'
   # Install win32api dependency. Must use the --only-binary switch explicitly
   # on AppVeyor
   - "%PYTHON%\\python.exe -m pip install --only-binary pywin32 pywin32"
