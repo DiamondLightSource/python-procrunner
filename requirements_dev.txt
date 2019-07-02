@@ -6,7 +6,7 @@ pip==19.1.1
 pytest==4.5.0 # pyup: <5.0 # for Python 2.7 support
 pytest-runner==5.1
 six==1.12.0
-Sphinx==1.8.5 # pyup: <2.0 # for Python 2.7 and 3.4 support
+Sphinx==1.8.5 # pyup: <2.0 # for Python 2.7 support
 tox==3.13.1
 twine==1.13.0
 watchdog==0.9.0
