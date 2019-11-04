@@ -12,12 +12,16 @@ environment:
       UNSTABLE: 1
     - PYTHON: "C:\\Python37"
       UNSTABLE: 1
+    - PYTHON: "C:\\Python38"
+      UNSTABLE: 1
     - PYTHON: "C:\\Python27-x64"
     - PYTHON: "C:\\Python35-x64"
       UNSTABLE: 1
     - PYTHON: "C:\\Python36-x64"
       UNSTABLE: 1
     - PYTHON: "C:\\Python37-x64"
+      UNSTABLE: 1
+    - PYTHON: "C:\\Python38-x64"
       UNSTABLE: 1
 
 matrix:
