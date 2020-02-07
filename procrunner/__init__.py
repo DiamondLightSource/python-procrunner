@@ -400,7 +400,7 @@ def run(
     :param array command: Command line to be run, specified as array.
     :param timeout: Terminate program execution after this many seconds.
     :param boolean debug: Enable further debug messages.
-    :param stdin: Optional string that is passed to command stdin.
+    :param stdin: Optional bytestring that is passed to command stdin.
     :param boolean print_stdout: Pass stdout through to sys.stdout.
     :param boolean print_stderr: Pass stderr through to sys.stderr.
     :param callback_stdout: Optional function which is called for each
