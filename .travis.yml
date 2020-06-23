@@ -6,7 +6,6 @@ matrix:
   include:
     - python: 3.9-dev
       dist: bionic
-      env: OPTIONAL=1
 #    - python: 3.9
 #      dist: bionic
 #      env: OPTIONAL=1
