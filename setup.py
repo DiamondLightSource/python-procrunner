@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
 from setuptools import setup, find_packages
 
 with open("README.rst") as readme_file:
@@ -13,9 +12,6 @@ with open("HISTORY.rst") as history_file:
 requirements = []
 
 setup_requirements = []
-needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
-if needs_pytest:
-    setup_requirements.append("pytest-runner")
 
 test_requirements = ["mock", "pytest"]
 
