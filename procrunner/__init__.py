@@ -7,6 +7,7 @@ import io
 import logging
 import os
 import select
+import shutil
 import subprocess
 import sys
 import time
@@ -277,9 +278,6 @@ def _windows_resolve(command):
     Try and find the full path and file extension of the executable to run.
     This is so that e.g. calls to 'somescript' will point at 'somescript.cmd'
     without the need to set shell=True in the subprocess.
-    If the executable contains periods it is a special case. Here the
-    win32api call will fail to resolve the extension automatically, and it
-    has do be done explicitly.
 
     :param command: The command array to be run, with the first element being
                     the command with or w/o path, with or w/o extension.
@@ -287,45 +285,23 @@ def _windows_resolve(command):
              correct extension. If the executable cannot be resolved for any
              reason the original command array is returned.
     """
-    try:
-        import win32api
-    except ImportError:
-        if (2, 8) < sys.version_info < (3, 5):
-            logger.info(
-                "Resolving executable names only supported on Python 2.7 and 3.5+"
-            )
-        else:
-            logger.warning(
-                "Could not resolve executable name: package win32api missing"
-            )
-        return command
-
     if not command or not isinstance(command[0], str):
         return command
 
-    try:
-        _, found_executable = win32api.FindExecutable(command[0])
+    found_executable = shutil.which(command[0])
+    if found_executable:
         logger.debug("Resolved %s as %s", command[0], found_executable)
-        return (found_executable,) + tuple(command[1:])
-    except Exception as e:
-        if not hasattr(e, "winerror"):
-            raise
-        # Keep this error message for later in case we fail to resolve the name
-        logwarning = getattr(e, "strerror", str(e))
+        return (found_executable, *command[1:])
 
-    if "." in command[0]:
-        # Special case. The win32api may not properly check file extensions, so
-        # try to resolve the executable explicitly.
+    if "\\" in command[0]:
+        # Special case. shutil.which may not detect file extensions if a full
+        # path is given, so try to resolve the executable explicitly
         for extension in os.getenv("PATHEXT").split(os.pathsep):
-            try:
-                _, found_executable = win32api.FindExecutable(command[0] + extension)
-                logger.debug("Resolved %s as %s", command[0], found_executable)
-                return (found_executable,) + tuple(command[1:])
-            except Exception as e:
-                if not hasattr(e, "winerror"):
-                    raise
+            found_executable = shutil.which(command[0] + extension)
+            if found_executable:
+                return (found_executable, *command[1:])
 
-    logger.warning("Error trying to resolve the executable: %s", logwarning)
+    logger.warning("Error trying to resolve the executable: %s", command[0])
     return command
 
 

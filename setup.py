@@ -10,9 +10,7 @@ with open("README.rst") as readme_file:
 with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
-requirements = [
-    'pywin32; sys_platform=="win32"',
-]
+requirements = []
 
 setup_requirements = []
 needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
