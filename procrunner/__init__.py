@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, division, print_function
-
 import codecs
 import io
 import logging
@@ -58,7 +54,7 @@ logger = logging.getLogger("procrunner")
 logger.addHandler(logging.NullHandler())
 
 
-class _LineAggregator(object):
+class _LineAggregator:
     """
     Buffer that can be filled with stream data and will aggregate complete
     lines. Lines can be printed or passed to an arbitrary callback function.
@@ -107,7 +103,7 @@ class _LineAggregator(object):
         self._buffer = ""
 
 
-class _NonBlockingStreamReader(object):
+class _NonBlockingStreamReader:
     """Reads a stream in a thread to avoid blocking/deadlocks"""
 
     def __init__(self, stream, output=True, debug=False, notify=None, callback=None):
@@ -201,7 +197,7 @@ class _NonBlockingStreamReader(object):
         return data
 
 
-class _NonBlockingStreamWriter(object):
+class _NonBlockingStreamWriter:
     """Writes to a stream in a thread to avoid blocking/deadlocks"""
 
     def __init__(self, stream, data, debug=False, notify=None):
@@ -224,7 +220,7 @@ class _NonBlockingStreamWriter(object):
                     block = self._buffer[self._buffer_pos :]
                 try:
                     self._stream.write(block)
-                except IOError as e:
+                except OSError as e:
                     if (
                         e.errno == 32
                     ):  # broken pipe, ie. process terminated without reading entire stdin
@@ -316,7 +312,7 @@ class ReturnObject(dict, subprocess.CompletedProcess):
     """
 
     def __init__(self, *arg, **kw):
-        super(ReturnObject, self).__init__(*arg, **kw)
+        super().__init__(*arg, **kw)
         self.args = self["command"]
         self.returncode = self["exitcode"]
         self.stdout = self["stdout"]

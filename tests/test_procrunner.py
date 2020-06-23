@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import copy
 import mock
 import os
@@ -150,7 +148,6 @@ def test_use_default_process_environment_and_add_another_value(mock_subprocess):
     random_environment_variable = list(os.environ)[0]
     if random_environment_variable == list(mock_env2)[0]:
         random_environment_variable = list(os.environ)[1]
-    random_environment_value = os.getenv(random_environment_variable)
     assert (
         random_environment_variable
         and random_environment_variable != list(mock_env2)[0]
@@ -192,7 +189,7 @@ def test_use_default_process_environment_and_override_a_value(mock_subprocess):
 def test_nonblockingstreamreader_can_read(mock_select):
     import time
 
-    class _stream(object):
+    class _stream:
         def __init__(self):
             self.data = b""
             self.closed = False

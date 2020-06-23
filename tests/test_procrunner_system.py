@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import os
 import sys
 
@@ -36,8 +34,8 @@ def test_decode_invalid_utf8_input(capsys):
     else:
         assert result.stdout == test_string
     out, err = capsys.readouterr()
-    assert out == u"test\ufffdstring\n"
-    assert err == u""
+    assert out == "test\ufffdstring\n"
+    assert err == ""
 
 
 def test_running_wget(tmpdir):

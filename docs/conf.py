@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # procrunner documentation build configuration file, created by
 # sphinx-quickstart on Fri Jun  9 13:47:02 2017.
@@ -48,9 +47,9 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"ProcRunner"
-copyright = u"2018, Markus Gerstel"
-author = u"Markus Gerstel"
+project = "ProcRunner"
+copyright = "2020, Markus Gerstel"
+author = "Markus Gerstel"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -129,8 +128,8 @@ latex_documents = [
     (
         master_doc,
         "procrunner.tex",
-        u"ProcRunner Documentation",
-        u"Markus Gerstel",
+        "ProcRunner Documentation",
+        "Markus Gerstel",
         "manual",
     )
 ]
@@ -140,7 +139,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "procrunner", u"ProcRunner Documentation", [author], 1)]
+man_pages = [(master_doc, "procrunner", "ProcRunner Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------
@@ -152,7 +151,7 @@ texinfo_documents = [
     (
         master_doc,
         "procrunner",
-        u"ProcRunner Documentation",
+        "ProcRunner Documentation",
         author,
         "procrunner",
         "One line description of project.",
