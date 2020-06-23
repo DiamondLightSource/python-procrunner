@@ -330,22 +330,7 @@ def _windows_resolve(command):
     return command
 
 
-if sys.version_info < (3, 5):
-
-    class _ReturnObjectParent(object):
-        def check_returncode(self):
-            if self.returncode:
-                raise Exception(
-                    "Call %r resulted in non-zero exit code %r"
-                    % (self.args, self.returncode)
-                )
-
-
-else:
-    _ReturnObjectParent = subprocess.CompletedProcess
-
-
-class ReturnObject(dict, _ReturnObjectParent):
+class ReturnObject(dict, subprocess.CompletedProcess):
     """
     A subprocess.CompletedProcess-like object containing the executed
     command, stdout and stderr (both as bytestrings), and the exitcode.
