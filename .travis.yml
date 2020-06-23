@@ -12,7 +12,6 @@ matrix:
       sudo: true
     - python: 3.6
     - python: 3.5
-    - python: 2.7
     - python: pypy
     - os: osx
       language: generic
@@ -26,9 +25,6 @@ matrix:
     - os: osx
       language: generic
       env: CONDA=3.5 TOXENV=py35
-    - os: osx
-      language: generic
-      env: CONDA=2.7 TOXENV=py27
 
   allow_failures:
     - env: OPTIONAL=1

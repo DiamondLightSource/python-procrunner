@@ -3,10 +3,10 @@
 from __future__ import absolute_import, division, print_function
 
 import codecs
+import io
 import logging
 import os
 import select
-import six
 import subprocess
 import sys
 import time
@@ -112,7 +112,7 @@ class _NonBlockingStreamReader(object):
 
     def __init__(self, stream, output=True, debug=False, notify=None, callback=None):
         """Creates and starts a thread which reads from a stream."""
-        self._buffer = six.BytesIO()
+        self._buffer = io.BytesIO()
         self._closed = False
         self._closing = False
         self._debug = debug
@@ -301,7 +301,7 @@ def _windows_resolve(command):
             )
         return command
 
-    if not command or not isinstance(command[0], six.string_types):
+    if not command or not isinstance(command[0], str):
         return command
 
     try:

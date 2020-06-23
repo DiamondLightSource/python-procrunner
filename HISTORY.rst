@@ -2,6 +2,12 @@
 History
 =======
 
+2.0.0
+-----
+
+* Python 3.5+ only, support for Python 2.7 has been dropped
+
+
 1.1.0 (2019-11-04)
 ------------------
 
