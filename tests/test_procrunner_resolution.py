@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 
-import mock
 import procrunner
 import pytest
 
@@ -49,6 +48,8 @@ def test_path_object_resolution_of_path_objects():
 @pytest.mark.skipif(sys.platform != "win32", reason="windows specific test only")
 def test_pywin32_import():
     import win32api
+
+    assert win32api
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="windows specific test only")

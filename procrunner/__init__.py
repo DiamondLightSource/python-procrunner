@@ -11,7 +11,6 @@ import subprocess
 import sys
 import time
 import timeit
-import warnings
 from multiprocessing import Pipe
 from threading import Thread
 
