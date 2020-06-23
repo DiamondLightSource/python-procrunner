@@ -457,10 +457,10 @@ def run(
                 # which could indicate that the process has terminated.
                 try:
                     event = thread_pipe_pool[0].poll(0.5)
-                except IOError as e:
-                    # on Windows this raises "IOError: [Errno 109] The pipe has been ended"
+                except BrokenPipeError as e:
+                    # on Windows this raises "BrokenPipeError: [Errno 109] The pipe has been ended"
                     # which is for all intents and purposes equivalent to a True return value.
-                    if e.errno != 109:
+                    if e.winerror != 109:
                         raise
                     event = True
                 if event:
