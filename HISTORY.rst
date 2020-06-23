@@ -6,6 +6,7 @@ History
 -----
 
 * Python 3.5+ only, support for Python 2.7 has been dropped
+* Deprecated function alias run_process() has been removed
 
 
 1.1.0 (2019-11-04)
