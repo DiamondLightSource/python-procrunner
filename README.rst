@@ -23,10 +23,6 @@ ProcRunner
         :target: https://procrunner.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://flat.badgen.net/dependabot/DiamondLightSource/python-procrunner?icon=dependabot
-        :target: https://github.com/DiamondLightSource/python-procrunner/pulls
-        :alt: Dependabot dependency updates
-
 .. image:: https://img.shields.io/pypi/pyversions/procrunner.svg
         :target: https://pypi.python.org/pypi/procrunner
         :alt: Supported Python versions
