@@ -2,12 +2,12 @@
 History
 =======
 
-2.0.0
------
+2.0.0 (2020-06-24)
+------------------
 
 * Python 3.5+ only, support for Python 2.7 has been dropped
 * Deprecated function alias run_process() has been removed
-
+* Fixed a stability issue on Windows
 
 1.1.0 (2019-11-04)
 ------------------
