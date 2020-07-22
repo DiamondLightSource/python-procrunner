@@ -281,6 +281,7 @@ def _windows_resolve(command):
              correct extension. If the executable cannot be resolved for any
              reason the original command array is returned.
     """
+    command = tuple(_path_resolve(part) for part in command)
     if not command or not isinstance(command[0], str):
         return command
 
