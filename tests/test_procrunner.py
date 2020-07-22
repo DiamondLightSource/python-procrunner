@@ -52,7 +52,7 @@ def test_run_command_runs_command_and_directs_pipelines(
         "stderr": mock.sentinel.proc_stderr,
         "stdout": mock.sentinel.proc_stdout,
         "exitcode": mock_process.returncode,
-        "command": tuple(command),
+        "command": command,
         "runtime": mock.ANY,
         "timeout": False,
         "time_start": mock.ANY,
@@ -94,7 +94,7 @@ def test_run_command_runs_command_and_directs_pipelines(
     assert not mock_process.kill.called
     for key in expected:
         assert actual[key] == expected[key]
-    assert actual.args == tuple(command)
+    assert tuple(actual.args) == tuple(command)
     assert actual.returncode == mock_process.returncode
     assert actual.stdout == mock.sentinel.proc_stdout
     assert actual.stderr == mock.sentinel.proc_stderr
