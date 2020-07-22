@@ -402,14 +402,13 @@ def run(
             }
         )
 
-    command = tuple(_path_resolve(part) for part in command)
     if win32resolve and sys.platform == "win32":
         command = _windows_resolve(command)
 
     p = subprocess.Popen(
         command,
         shell=False,
-        cwd=_path_resolve(working_directory),
+        cwd=working_directory,
         env=env,
         stdin=stdin_pipe,
         stdout=subprocess.PIPE,
