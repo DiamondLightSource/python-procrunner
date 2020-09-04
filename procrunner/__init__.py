@@ -181,14 +181,14 @@ class _NonBlockingStreamReader:
             if not self.has_finished():
                 if self._debug:
                     logger.debug(
-                        "NBSR join after %f seconds, underrun not resolved"
-                        % (timeit.default_timer() - underrun_debug_timer)
+                        "NBSR join after %f seconds, underrun not resolved",
+                        timeit.default_timer() - underrun_debug_timer,
                     )
                 raise Exception("thread did not terminate")
             if self._debug:
                 logger.debug(
-                    "NBSR underrun resolved after %f seconds"
-                    % (timeit.default_timer() - underrun_debug_timer)
+                    "NBSR underrun resolved after %f seconds",
+                    timeit.default_timer() - underrun_debug_timer,
                 )
         if self._closed:
             raise Exception("streamreader double-closed")
@@ -233,7 +233,7 @@ class _NonBlockingStreamWriter:
                     raise
                 self._buffer_pos += len(block)
                 if debug:
-                    logger.debug("wrote %d bytes to stream" % len(block))
+                    logger.debug("wrote %d bytes to stream", len(block))
             self._stream.close()
             self._terminated = True
             if notify:
@@ -527,7 +527,7 @@ def run(
         (timeout is None) or (timeit.default_timer() < max_time)
     ):
         if debug and timeout is not None:
-            logger.debug("still running (T%.2fs)" % (timeit.default_timer() - max_time))
+            logger.debug("still running (T%.2fs)", timeit.default_timer() - max_time)
 
         # wait for some time or until a stream is closed
         try:
@@ -561,7 +561,7 @@ def run(
         # timeout condition
         timeout_encountered = True
         if debug:
-            logger.debug("timeout (T%.2fs)" % (timeit.default_timer() - max_time))
+            logger.debug("timeout (T%.2fs)", timeit.default_timer() - max_time)
 
         # send terminate signal and wait some time for buffers to be read
         p.terminate()
@@ -587,13 +587,14 @@ def run(
     runtime = timeit.default_timer() - start_time
     if timeout is not None:
         logger.debug(
-            "Process ended after %.1f seconds with exit code %d (T%.2fs)"
-            % (runtime, p.returncode, timeit.default_timer() - max_time)
+            "Process ended after %.1f seconds with exit code %d (T%.2fs)",
+            runtime,
+            p.returncode,
+            timeit.default_timer() - max_time,
         )
     else:
         logger.debug(
-            "Process ended after %.1f seconds with exit code %d"
-            % (runtime, p.returncode)
+            "Process ended after %.1f seconds with exit code %d", runtime, p.returncode
         )
 
     stdout = stdout.get_output()
