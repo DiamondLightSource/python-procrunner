@@ -18,8 +18,8 @@ from threading import Thread
 #
 #    - runs an external process and waits for it to finish
 #    - does not deadlock, no matter the process stdout/stderr output behaviour
-#    - returns the exit code, stdout, stderr (separately), and the total process
-#      runtime as a dictionary
+#    - returns the exit code, stdout, stderr (separately) as a
+#      subprocess.CompletedProcess object
 #    - process can run in a custom environment, either as a modification of
 #      the current environment or in a new environment from scratch
 #    - stdin can be fed to the process, the returned dictionary contains
@@ -37,15 +37,19 @@ from threading import Thread
 #
 #  Returns:
 #
-# {'command': ['/bin/ls', '/some/path/containing spaces'],
-#  'exitcode': 2,
-#  'runtime': 0.12990689277648926,
-#  'stderr': '/bin/ls: cannot access /some/path/containing spaces: No such file or directory\n',
-#  'stdout': '',
-#  'time_end': '2017-11-12 19:54:49 GMT',
-#  'time_start': '2017-11-12 19:54:49 GMT',
-#  'timeout': False}
+# ReturnObject(
+#   args=('/bin/ls', '/some/path/containing spaces'),
+#   returncode=2,
+#   stdout=b'',
+#   stderr=b'/bin/ls: cannot access /some/path/containing spaces: No such file or directory\n'
+# )
 #
+# which also offers (albeit deprecated)
+#
+# result.runtime == 0.12990689277648926
+# result.time_end == '2017-11-12 19:54:49 GMT'
+# result.time_start == '2017-11-12 19:54:49 GMT'
+# result.timeout == False
 
 __author__ = """Markus Gerstel"""
 __email__ = "scientificsoftware@diamond.ac.uk"
