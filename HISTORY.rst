@@ -2,8 +2,14 @@
 History
 =======
 
+2.2.0 (????-??-??)
+------------------
+
+* Python 3.6+ only, support for Python 3.5 has been dropped
+
 2.1.0 (2020-09-05)
 ------------------
+
 * `Deprecated array access on the return object (#60). <https://github.com/DiamondLightSource/python-procrunner/pull/60>`_
   The return object will become a subprocess.CompletedProcess in a future
   release, which no longer allows array-based access. For a translation table
