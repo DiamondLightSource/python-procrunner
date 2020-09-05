@@ -2,12 +2,10 @@ repos:
 
 # Automatic source code formatting
 - repo: https://github.com/psf/black
-  rev: 19.10b0
+  rev: 20.8b1
   hooks:
   - id: black
     args: [--safe, --quiet]
-    files: \.pyi?$|SConscript$|^libtbx_config$
-    types: [file]
 
 # Syntax check and some basic flake8
 - repo: https://github.com/pre-commit/pre-commit-hooks
