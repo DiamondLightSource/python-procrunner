@@ -273,7 +273,7 @@ def _path_resolve(obj):
     return obj
 
 
-def _windows_resolve(command):
+def _windows_resolve(command, path=None):
     """
     Try and find the full path and file extension of the executable to run.
     This is so that e.g. calls to 'somescript' will point at 'somescript.cmd'
@@ -288,7 +288,7 @@ def _windows_resolve(command):
     if not command or not isinstance(command[0], str):
         return command
 
-    found_executable = shutil.which(command[0])
+    found_executable = shutil.which(command[0], path=path)
     if found_executable:
         logger.debug("Resolved %s as %s", command[0], found_executable)
         return (found_executable, *command[1:])
@@ -297,7 +297,7 @@ def _windows_resolve(command):
         # Special case. shutil.which may not detect file extensions if a full
         # path is given, so try to resolve the executable explicitly
         for extension in os.getenv("PATHEXT").split(os.pathsep):
-            found_executable = shutil.which(command[0] + extension)
+            found_executable = shutil.which(command[0] + extension, path=path)
             if found_executable:
                 return (found_executable, *command[1:])
 
