@@ -500,7 +500,14 @@ def run(
         # send terminate signal and wait some time for buffers to be read
         p.terminate()
         if thread_pipe_pool:
-            thread_pipe_pool[0].poll(0.5)
+            try:
+                thread_pipe_pool[0].poll(0.5)
+            except BrokenPipeError as e:
+                # on Windows this raises "BrokenPipeError: [Errno 109] The pipe has been ended"
+                # which is for all intents and purposes equivalent to a True return value.
+                if e.winerror != 109:
+                    raise
+                thread_pipe_pool.pop(0)
         if not stdout.has_finished() or not stderr.has_finished():
             time.sleep(2)
         p.poll()
@@ -510,7 +517,14 @@ def run(
         # send kill signal and wait some more time for buffers to be read
         p.kill()
         if thread_pipe_pool:
-            thread_pipe_pool[0].poll(0.5)
+            try:
+                thread_pipe_pool[0].poll(0.5)
+            except BrokenPipeError as e:
+                # on Windows this raises "BrokenPipeError: [Errno 109] The pipe has been ended"
+                # which is for all intents and purposes equivalent to a True return value.
+                if e.winerror != 109:
+                    raise
+                thread_pipe_pool.pop(0)
         if not stdout.has_finished() or not stderr.has_finished():
             time.sleep(5)
         p.poll()
