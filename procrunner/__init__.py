@@ -8,6 +8,7 @@ import subprocess
 import sys
 import time
 import timeit
+import warnings
 from multiprocessing import Pipe
 from threading import Thread
 
@@ -17,8 +18,8 @@ from threading import Thread
 #
 #    - runs an external process and waits for it to finish
 #    - does not deadlock, no matter the process stdout/stderr output behaviour
-#    - returns the exit code, stdout, stderr (separately), and the total process
-#      runtime as a dictionary
+#    - returns the exit code, stdout, stderr (separately) as a
+#      subprocess.CompletedProcess object
 #    - process can run in a custom environment, either as a modification of
 #      the current environment or in a new environment from scratch
 #    - stdin can be fed to the process, the returned dictionary contains
@@ -36,15 +37,19 @@ from threading import Thread
 #
 #  Returns:
 #
-# {'command': ['/bin/ls', '/some/path/containing spaces'],
-#  'exitcode': 2,
-#  'runtime': 0.12990689277648926,
-#  'stderr': '/bin/ls: cannot access /some/path/containing spaces: No such file or directory\n',
-#  'stdout': '',
-#  'time_end': '2017-11-12 19:54:49 GMT',
-#  'time_start': '2017-11-12 19:54:49 GMT',
-#  'timeout': False}
+# ReturnObject(
+#   args=('/bin/ls', '/some/path/containing spaces'),
+#   returncode=2,
+#   stdout=b'',
+#   stderr=b'/bin/ls: cannot access /some/path/containing spaces: No such file or directory\n'
+# )
 #
+# which also offers (albeit deprecated)
+#
+# result.runtime == 0.12990689277648926
+# result.time_end == '2017-11-12 19:54:49 GMT'
+# result.time_start == '2017-11-12 19:54:49 GMT'
+# result.timeout == False
 
 __author__ = """Markus Gerstel"""
 __email__ = "scientificsoftware@diamond.ac.uk"
@@ -180,14 +185,14 @@ class _NonBlockingStreamReader:
             if not self.has_finished():
                 if self._debug:
                     logger.debug(
-                        "NBSR join after %f seconds, underrun not resolved"
-                        % (timeit.default_timer() - underrun_debug_timer)
+                        "NBSR join after %f seconds, underrun not resolved",
+                        timeit.default_timer() - underrun_debug_timer,
                     )
                 raise Exception("thread did not terminate")
             if self._debug:
                 logger.debug(
-                    "NBSR underrun resolved after %f seconds"
-                    % (timeit.default_timer() - underrun_debug_timer)
+                    "NBSR underrun resolved after %f seconds",
+                    timeit.default_timer() - underrun_debug_timer,
                 )
         if self._closed:
             raise Exception("streamreader double-closed")
@@ -232,7 +237,7 @@ class _NonBlockingStreamWriter:
                     raise
                 self._buffer_pos += len(block)
                 if debug:
-                    logger.debug("wrote %d bytes to stream" % len(block))
+                    logger.debug("wrote %d bytes to stream", len(block))
             self._stream.close()
             self._terminated = True
             if notify:
@@ -301,7 +306,7 @@ def _windows_resolve(command):
     return command
 
 
-class ReturnObject(dict, subprocess.CompletedProcess):
+class ReturnObject(subprocess.CompletedProcess):
     """
     A subprocess.CompletedProcess-like object containing the executed
     command, stdout and stderr (both as bytestrings), and the exitcode.
@@ -311,12 +316,28 @@ class ReturnObject(dict, subprocess.CompletedProcess):
     exited with a non-zero exit code.
     """
 
-    def __init__(self, *arg, **kw):
-        super().__init__(*arg, **kw)
-        self.args = self["command"]
-        self.returncode = self["exitcode"]
-        self.stdout = self["stdout"]
-        self.stderr = self["stderr"]
+    def __init__(self, exitcode=None, command=None, stdout=None, stderr=None, **kw):
+        super().__init__(
+            args=command, returncode=exitcode, stdout=stdout, stderr=stderr
+        )
+        self._extras = {
+            "timeout": kw.get("timeout"),
+            "runtime": kw.get("runtime"),
+            "time_start": kw.get("time_start"),
+            "time_end": kw.get("time_end"),
+        }
+
+    def __getitem__(self, key):
+        warnings.warn(
+            "dictionary access to a procrunner return object is deprecated",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if key in self._extras:
+            return self._extras[key]
+        if not hasattr(self, key):
+            raise KeyError("Unknown attribute {key}".format(key=key))
+        return getattr(self, key)
 
     def __eq__(self, other):
         """Override equality operator to account for added fields"""
@@ -328,9 +349,71 @@ class ReturnObject(dict, subprocess.CompletedProcess):
         """This object is not immutable, so mark it as unhashable"""
         return None
 
-    def __ne__(self, other):
-        """Overrides the default implementation (unnecessary in Python 3)"""
-        return not self.__eq__(other)
+    @property
+    def cmd(self):
+        warnings.warn(
+            "procrunner return object .cmd is deprecated, use .args",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.args
+
+    @property
+    def command(self):
+        warnings.warn(
+            "procrunner return object .command is deprecated, use .args",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.args
+
+    @property
+    def exitcode(self):
+        warnings.warn(
+            "procrunner return object .exitcode is deprecated, use .returncode",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.returncode
+
+    @property
+    def timeout(self):
+        warnings.warn(
+            "procrunner return object .timeout is deprecated",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._extras["timeout"]
+
+    @property
+    def runtime(self):
+        warnings.warn(
+            "procrunner return object .runtime is deprecated",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._extras["runtime"]
+
+    @property
+    def time_start(self):
+        warnings.warn(
+            "procrunner return object .time_start is deprecated",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._extras["time_start"]
+
+    @property
+    def time_end(self):
+        warnings.warn(
+            "procrunner return object .time_end is deprecated",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._extras["time_end"]
+
+    def update(self, dictionary):
+        self._extras.update(dictionary)
 
 
 def run(
@@ -448,7 +531,7 @@ def run(
         (timeout is None) or (timeit.default_timer() < max_time)
     ):
         if debug and timeout is not None:
-            logger.debug("still running (T%.2fs)" % (timeit.default_timer() - max_time))
+            logger.debug("still running (T%.2fs)", timeit.default_timer() - max_time)
 
         # wait for some time or until a stream is closed
         try:
@@ -482,7 +565,7 @@ def run(
         # timeout condition
         timeout_encountered = True
         if debug:
-            logger.debug("timeout (T%.2fs)" % (timeit.default_timer() - max_time))
+            logger.debug("timeout (T%.2fs)", timeit.default_timer() - max_time)
 
         # send terminate signal and wait some time for buffers to be read
         p.terminate()
@@ -508,13 +591,14 @@ def run(
     runtime = timeit.default_timer() - start_time
     if timeout is not None:
         logger.debug(
-            "Process ended after %.1f seconds with exit code %d (T%.2fs)"
-            % (runtime, p.returncode, timeit.default_timer() - max_time)
+            "Process ended after %.1f seconds with exit code %d (T%.2fs)",
+            runtime,
+            p.returncode,
+            timeit.default_timer() - max_time,
         )
     else:
         logger.debug(
-            "Process ended after %.1f seconds with exit code %d"
-            % (runtime, p.returncode)
+            "Process ended after %.1f seconds with exit code %d", runtime, p.returncode
         )
 
     stdout = stdout.get_output()
@@ -522,16 +606,14 @@ def run(
     time_end = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
 
     result = ReturnObject(
-        {
-            "exitcode": p.returncode,
-            "command": command,
-            "stdout": stdout,
-            "stderr": stderr,
-            "timeout": timeout_encountered,
-            "runtime": runtime,
-            "time_start": time_start,
-            "time_end": time_end,
-        }
+        exitcode=p.returncode,
+        command=command,
+        stdout=stdout,
+        stderr=stderr,
+        timeout=timeout_encountered,
+        runtime=runtime,
+        time_start=time_start,
+        time_end=time_end,
     )
     if stdin is not None:
         result.update(

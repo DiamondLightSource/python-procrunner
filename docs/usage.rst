@@ -9,13 +9,14 @@ To use ProcRunner in a project::
 
 To test for successful completion::
 
-    assert not result['exitcode']
-    assert result['exitcode'] == 0 # alternatively
+    assert not result.returncode
+    assert result.returncode == 0  # alternatively
+    result.check_returncode()  # raises subprocess.CalledProcessError()
 
 To test for no STDERR output::
 
-    assert not result['stderr']
-    assert result['stderr'] == b'' # alternatively
+    assert not result.stderr
+    assert result.stderr == b''  # alternatively
 
 To run with a specific environment variable set::
 
