@@ -82,11 +82,8 @@ def test_timeout_behaviour_legacy(tmp_path):
             raise_timeout_exception=False,
         )
     runtime = timeit.default_timer() - start
-    if hasattr(result, "timeout"):
-        with pytest.warns(DeprecationWarning, match="\\.timeout"):
-            assert result.timeout
-    else:
-        assert result["timeout"]
+    with pytest.warns(DeprecationWarning, match="\\.timeout"):
+        assert result.timeout
     assert runtime < 3
     assert not result.stdout
     assert not result.stderr
