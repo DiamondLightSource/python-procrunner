@@ -10,6 +10,28 @@ import sys
 @mock.patch("procrunner.time")
 @mock.patch("procrunner.subprocess")
 @mock.patch("procrunner.Pipe")
+def test_run_command_aborts_after_timeout_legacy(
+    mock_pipe, mock_subprocess, mock_time, mock_streamreader
+):
+    mock_pipe.return_value = mock.Mock(), mock.Mock()
+    mock_process = mock.Mock()
+    mock_process.returncode = None
+    mock_subprocess.Popen.return_value = mock_process
+    task = ["___"]
+
+    with pytest.raises(RuntimeError):
+        with pytest.warns(DeprecationWarning, match="timeout"):
+            procrunner.run(task, -1, False)
+
+    assert mock_subprocess.Popen.called
+    assert mock_process.terminate.called
+    assert mock_process.kill.called
+
+
+@mock.patch("procrunner._NonBlockingStreamReader")
+@mock.patch("procrunner.time")
+@mock.patch("procrunner.subprocess")
+@mock.patch("procrunner.Pipe")
 def test_run_command_aborts_after_timeout(
     mock_pipe, mock_subprocess, mock_time, mock_streamreader
 ):
@@ -20,7 +42,7 @@ def test_run_command_aborts_after_timeout(
     task = ["___"]
 
     with pytest.raises(RuntimeError):
-        procrunner.run(task, -1, False)
+        procrunner.run(task, -1, False, raise_timeout_exception=True)
 
     assert mock_subprocess.Popen.called
     assert mock_process.terminate.called
@@ -66,6 +88,7 @@ def test_run_command_runs_command_and_directs_pipelines(
         callback_stdout=mock.sentinel.callback_stdout,
         callback_stderr=mock.sentinel.callback_stderr,
         working_directory=mock.sentinel.cwd,
+        raise_timeout_exception=True,
     )
 
     assert mock_subprocess.Popen.called
@@ -105,7 +128,7 @@ def test_run_command_runs_command_and_directs_pipelines(
 def test_default_process_environment_is_parent_environment(mock_subprocess):
     mock_subprocess.Popen.side_effect = NotImplementedError()  # cut calls short
     with pytest.raises(NotImplementedError):
-        procrunner.run([mock.Mock()], -1, False)
+        procrunner.run([mock.Mock()], -1, False, raise_timeout_exception=True)
     assert mock_subprocess.Popen.call_args[1]["env"] == os.environ
 
 
@@ -115,7 +138,13 @@ def test_pass_custom_environment_to_process(mock_subprocess):
     mock_env = {"key": mock.sentinel.key}
     # Pass an environment dictionary
     with pytest.raises(NotImplementedError):
-        procrunner.run([mock.Mock()], -1, False, environment=copy.copy(mock_env))
+        procrunner.run(
+            [mock.Mock()],
+            -1,
+            False,
+            environment=copy.copy(mock_env),
+            raise_timeout_exception=True,
+        )
     assert mock_subprocess.Popen.call_args[1]["env"] == mock_env
 
 
@@ -132,6 +161,7 @@ def test_pass_custom_environment_to_process_and_add_another_value(mock_subproces
             False,
             environment=copy.copy(mock_env1),
             environment_override=copy.copy(mock_env2),
+            raise_timeout_exception=True,
         )
     mock_env_sum = copy.copy(mock_env1)
     mock_env_sum.update({key: str(mock_env2[key]) for key in mock_env2})
@@ -144,7 +174,11 @@ def test_use_default_process_environment_and_add_another_value(mock_subprocess):
     mock_env2 = {"keyB": str(mock.sentinel.keyB)}
     with pytest.raises(NotImplementedError):
         procrunner.run(
-            [mock.Mock()], -1, False, environment_override=copy.copy(mock_env2)
+            [mock.Mock()],
+            -1,
+            False,
+            environment_override=copy.copy(mock_env2),
+            raise_timeout_exception=True,
         )
     random_environment_variable = list(os.environ)[0]
     if random_environment_variable == list(mock_env2)[0]:
@@ -175,6 +209,7 @@ def test_use_default_process_environment_and_override_a_value(mock_subprocess):
             environment_override={
                 random_environment_variable: "X" + random_environment_value
             },
+            raise_timeout_exception=True,
         )
     assert (
         mock_subprocess.Popen.call_args[1]["env"][random_environment_variable]

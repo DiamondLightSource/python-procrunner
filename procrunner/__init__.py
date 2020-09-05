@@ -429,6 +429,7 @@ def run(
     environment_override=None,
     win32resolve=True,
     working_directory=None,
+    raise_timeout_exception=False,
 ):
     """
     Run an external process.
@@ -455,6 +456,11 @@ def run(
                                  extension.
     :param string working_directory: If specified, run the executable from
                                      within this working directory.
+    :param boolean raise_timeout_exception: Forward compatibility flag. If set
+                             then a subprocess.TimeoutExpired exception is raised
+                             instead of returning an object that can be checked
+                             for a timeout condition. Defaults to False, will be
+                             changed to True in a future release.
     :return: A ReturnObject() containing the executed command, stdout and stderr
              (both as bytestrings), and the exitcode. Further values such as
              process runtime can be accessed as dictionary values.
@@ -472,6 +478,12 @@ def run(
     start_time = timeit.default_timer()
     if timeout is not None:
         max_time = start_time + timeout
+        if not raise_timeout_exception:
+            warnings.warn(
+                "Using procrunner with timeout and without raise_timeout_exception set is deprecated",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
     if environment is not None:
         env = {key: _path_resolve(environment[key]) for key in environment}
@@ -570,7 +582,14 @@ def run(
         # send terminate signal and wait some time for buffers to be read
         p.terminate()
         if thread_pipe_pool:
-            thread_pipe_pool[0].poll(0.5)
+            try:
+                thread_pipe_pool[0].poll(0.5)
+            except BrokenPipeError as e:
+                # on Windows this raises "BrokenPipeError: [Errno 109] The pipe has been ended"
+                # which is for all intents and purposes equivalent to a True return value.
+                if e.winerror != 109:
+                    raise
+                thread_pipe_pool.pop(0)
         if not stdout.has_finished() or not stderr.has_finished():
             time.sleep(2)
         p.poll()
@@ -580,7 +599,14 @@ def run(
         # send kill signal and wait some more time for buffers to be read
         p.kill()
         if thread_pipe_pool:
-            thread_pipe_pool[0].poll(0.5)
+            try:
+                thread_pipe_pool[0].poll(0.5)
+            except BrokenPipeError as e:
+                # on Windows this raises "BrokenPipeError: [Errno 109] The pipe has been ended"
+                # which is for all intents and purposes equivalent to a True return value.
+                if e.winerror != 109:
+                    raise
+                thread_pipe_pool.pop(0)
         if not stdout.has_finished() or not stderr.has_finished():
             time.sleep(5)
         p.poll()
@@ -603,8 +629,13 @@ def run(
 
     stdout = stdout.get_output()
     stderr = stderr.get_output()
-    time_end = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
 
+    if timeout_encountered and raise_timeout_exception:
+        raise subprocess.TimeoutExpired(
+            cmd=command, timeout=timeout, output=stdout, stderr=stderr
+        )
+
+    time_end = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
     result = ReturnObject(
         exitcode=p.returncode,
         command=command,

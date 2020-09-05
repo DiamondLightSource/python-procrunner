@@ -51,7 +51,8 @@ Features
 * stdout and stderr is printed by default, can be disabled
 * stdout and stderr can be passed to any arbitrary function for
   live processing (separately, both as unicode strings)
-* optionally enforces a time limit on the process
+* optionally enforces a time limit on the process, raising a
+  subprocess.TimeoutExpired exception if it is exceeded.
 
 Credits
 -------
