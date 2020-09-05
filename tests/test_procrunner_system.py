@@ -1,5 +1,7 @@
 import os
+import subprocess
 import sys
+import timeit
 
 import procrunner
 import pytest
@@ -68,3 +70,42 @@ def test_path_object_resolution(tmpdir):
     assert (
         "LEAK_DETECTOR" not in os.environ
     ), "overridden environment variable leaked into parent process"
+
+
+def test_timeout_behaviour_legacy(tmp_path):
+    start = timeit.default_timer()
+    with pytest.warns(DeprecationWarning, match="timeout"):
+        result = procrunner.run(
+            [sys.executable, "-c", "import time; time.sleep(5)"],
+            timeout=0.1,
+            working_directory=tmp_path,
+            raise_timeout_exception=False,
+        )
+    runtime = timeit.default_timer() - start
+    if hasattr(result, "timeout"):
+        with pytest.warns(DeprecationWarning, match="\\.timeout"):
+            assert result.timeout
+    else:
+        assert result["timeout"]
+    assert runtime < 3
+    assert not result.stdout
+    assert not result.stderr
+    assert result.returncode
+
+
+def test_timeout_behaviour(tmp_path):
+    command = (sys.executable, "-c", "import time; time.sleep(5)")
+    start = timeit.default_timer()
+    with pytest.raises(subprocess.TimeoutExpired) as te:
+        procrunner.run(
+            command,
+            timeout=0.1,
+            working_directory=tmp_path,
+            raise_timeout_exception=True,
+        )
+    runtime = timeit.default_timer() - start
+    assert runtime < 3
+    assert te.value.stdout == b""
+    assert te.value.stderr == b""
+    assert te.value.timeout == 0.1
+    assert te.value.cmd == command

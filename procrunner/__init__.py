@@ -8,6 +8,7 @@ import subprocess
 import sys
 import time
 import timeit
+import warnings
 from multiprocessing import Pipe
 from threading import Thread
 
@@ -346,6 +347,7 @@ def run(
     environment_override=None,
     win32resolve=True,
     working_directory=None,
+    raise_timeout_exception=False,
 ):
     """
     Run an external process.
@@ -372,6 +374,11 @@ def run(
                                  extension.
     :param string working_directory: If specified, run the executable from
                                      within this working directory.
+    :param boolean raise_timeout_exception: Forward compatibility flag. If set
+                             then a subprocess.TimeoutExpired exception is raised
+                             instead of returning an object that can be checked
+                             for a timeout condition. Defaults to False, will be
+                             changed to True in a future release.
     :return: A ReturnObject() containing the executed command, stdout and stderr
              (both as bytestrings), and the exitcode. Further values such as
              process runtime can be accessed as dictionary values.
@@ -389,6 +396,12 @@ def run(
     start_time = timeit.default_timer()
     if timeout is not None:
         max_time = start_time + timeout
+        if not raise_timeout_exception:
+            warnings.warn(
+                "Using procrunner with timeout and without raise_timeout_exception set is deprecated",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
     if environment is not None:
         env = {key: _path_resolve(environment[key]) for key in environment}
@@ -519,8 +532,13 @@ def run(
 
     stdout = stdout.get_output()
     stderr = stderr.get_output()
-    time_end = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
 
+    if timeout_encountered and raise_timeout_exception:
+        raise subprocess.TimeoutExpired(
+            cmd=command, timeout=timeout, output=stdout, stderr=stderr
+        )
+
+    time_end = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
     result = ReturnObject(
         {
             "exitcode": p.returncode,
