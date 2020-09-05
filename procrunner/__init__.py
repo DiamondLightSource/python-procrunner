@@ -22,8 +22,7 @@ from threading import Thread
 #      subprocess.CompletedProcess object
 #    - process can run in a custom environment, either as a modification of
 #      the current environment or in a new environment from scratch
-#    - stdin can be fed to the process, the returned dictionary contains
-#      information how much was read by the process
+#    - stdin can be fed to the process
 #    - stdout and stderr is printed by default, can be disabled
 #    - stdout and stderr can be passed to any arbitrary function for
 #      live processing
@@ -310,8 +309,6 @@ class ReturnObject(subprocess.CompletedProcess):
     """
     A subprocess.CompletedProcess-like object containing the executed
     command, stdout and stderr (both as bytestrings), and the exitcode.
-    Further values such as process runtime can be accessed as dictionary
-    values.
     The check_returncode() function raises an exception if the process
     exited with a non-zero exit code.
     """
@@ -461,9 +458,8 @@ def run(
                              instead of returning an object that can be checked
                              for a timeout condition. Defaults to False, will be
                              changed to True in a future release.
-    :return: A ReturnObject() containing the executed command, stdout and stderr
-             (both as bytestrings), and the exitcode. Further values such as
-             process runtime can be accessed as dictionary values.
+    :return: The exit code, stdout, stderr (separately, as byte strings)
+             as a subprocess.CompletedProcess object.
     """
 
     time_start = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
