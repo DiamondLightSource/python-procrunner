@@ -333,7 +333,7 @@ class ReturnObject(subprocess.CompletedProcess):
         if key in self._extras:
             return self._extras[key]
         if not hasattr(self, key):
-            raise KeyError("Unknown attribute {key}".format(key=key))
+            raise KeyError(f"Unknown attribute {key}")
         return getattr(self, key)
 
     def __eq__(self, other):
