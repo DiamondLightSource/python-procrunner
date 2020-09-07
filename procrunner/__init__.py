@@ -1,4 +1,5 @@
 import codecs
+import functools
 import io
 import logging
 import os
@@ -413,6 +414,22 @@ class ReturnObject(subprocess.CompletedProcess):
         self._extras.update(dictionary)
 
 
+def _deprecate_argument_calling(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        if len(args) > 1:
+            warnings.warn(
+                "Calling procrunner.run() with unnamed arguments (apart from "
+                "the command) is deprecated. Use keyword arguments instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
+@_deprecate_argument_calling
 def run(
     command,
     timeout=None,
