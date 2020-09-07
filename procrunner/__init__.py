@@ -210,7 +210,6 @@ class _NonBlockingStreamWriter:
         self._buffer = data
         self._buffer_len = len(data)
         self._buffer_pos = 0
-        self._debug = debug
         self._max_block_len = 4096
         self._stream = stream
         self._terminated = False
@@ -433,7 +432,7 @@ def _deprecate_argument_calling(f):
 def run(
     command,
     timeout=None,
-    debug=False,
+    debug=None,
     stdin=None,
     print_stdout=True,
     print_stderr=True,
@@ -453,7 +452,7 @@ def run(
 
     :param array command: Command line to be run, specified as array.
     :param timeout: Terminate program execution after this many seconds.
-    :param boolean debug: Enable further debug messages.
+    :param boolean debug: Enable further debug messages. (deprecated)
     :param stdin: Optional bytestring that is passed to command stdin.
     :param boolean print_stdout: Pass stdout through to sys.stdout.
     :param boolean print_stderr: Pass stderr through to sys.stderr.
@@ -487,6 +486,10 @@ def run(
     else:
         assert sys.platform != "win32", "stdin argument not supported on Windows"
         stdin_pipe = subprocess.PIPE
+    if debug is not None:
+        warnings.warn(
+            "Use of the debug parameter is deprecated", DeprecationWarning, stacklevel=2
+        )
 
     start_time = timeit.default_timer()
     if timeout is not None:
