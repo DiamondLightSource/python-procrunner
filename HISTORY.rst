@@ -8,11 +8,12 @@ History
   list as the first argument) is now deprecated. As a number of arguments
   will be removed in a future version the use of unnamed arguments will
   cause future confusion. `Use explicit keyword arguments instead (#62). <https://github.com/DiamondLightSource/python-procrunner/pull/62>`_
-* The run() function debug argument has been deprecated. This is only
-  only used to debug the NonBlockingStream* classes. Those are due to be
-  replaced in a future release, so the argument will no longer serve a
-  purpose. Debugging information remains available via standard logging
+* `The run() function debug argument has been deprecated (#63). <https://github.com/DiamondLightSource/python-procrunner/pull/63>`_
+  This is only used to debug the NonBlockingStream* classes. Those are due
+  to be replaced in a future release, so the argument will no longer serve
+  a purpose. Debugging information remains available via standard logging
   mechanisms.
+* Final version supporting Python 3.5
 
 2.1.0 (2020-09-05)
 ------------------
@@ -24,7 +25,6 @@ History
   When set to 'True' a subprocess.TimeoutExpired exception is raised when the
   process runtime exceeds the timeout threshold. This defaults to 'False' and
   will be set to 'True' in a future release.
-* Final version supporting Python 3.5
 
 2.0.0 (2020-06-24)
 ------------------
