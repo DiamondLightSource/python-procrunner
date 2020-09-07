@@ -8,6 +8,11 @@ History
   list as the first argument) is now deprecated. As a number of arguments
   will be removed in a future version the use of unnamed arguments will
   cause future confusion. `Use explicit keyword arguments instead (#62). <https://github.com/DiamondLightSource/python-procrunner/pull/62>`_
+* The run() function debug argument has been deprecated. This is only
+  only used to debug the NonBlockingStream* classes. Those are due to be
+  replaced in a future release, so the argument will no longer serve a
+  purpose. Debugging information remains available via standard logging
+  mechanisms.
 
 2.1.0 (2020-09-05)
 ------------------
