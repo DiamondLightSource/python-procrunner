@@ -21,7 +21,7 @@ def test_run_command_aborts_after_timeout_legacy(
 
     with pytest.raises(RuntimeError):
         with pytest.warns(DeprecationWarning, match="timeout"):
-            procrunner.run(task, -1, False)
+            procrunner.run(task, timeout=-1, debug=False)
 
     assert mock_subprocess.Popen.called
     assert mock_process.terminate.called
@@ -42,7 +42,7 @@ def test_run_command_aborts_after_timeout(
     task = ["___"]
 
     with pytest.raises(RuntimeError):
-        procrunner.run(task, -1, False, raise_timeout_exception=True)
+        procrunner.run(task, timeout=-1, debug=False, raise_timeout_exception=True)
 
     assert mock_subprocess.Popen.called
     assert mock_process.terminate.called
@@ -83,8 +83,8 @@ def test_run_command_runs_command_and_directs_pipelines(
 
     actual = procrunner.run(
         command,
-        0.5,
-        False,
+        timeout=0.5,
+        debug=False,
         callback_stdout=mock.sentinel.callback_stdout,
         callback_stderr=mock.sentinel.callback_stderr,
         working_directory=mock.sentinel.cwd,
@@ -128,7 +128,9 @@ def test_run_command_runs_command_and_directs_pipelines(
 def test_default_process_environment_is_parent_environment(mock_subprocess):
     mock_subprocess.Popen.side_effect = NotImplementedError()  # cut calls short
     with pytest.raises(NotImplementedError):
-        procrunner.run([mock.Mock()], -1, False, raise_timeout_exception=True)
+        procrunner.run(
+            [mock.Mock()], timeout=-1, debug=False, raise_timeout_exception=True
+        )
     assert mock_subprocess.Popen.call_args[1]["env"] == os.environ
 
 
@@ -140,8 +142,8 @@ def test_pass_custom_environment_to_process(mock_subprocess):
     with pytest.raises(NotImplementedError):
         procrunner.run(
             [mock.Mock()],
-            -1,
-            False,
+            timeout=-1,
+            debug=False,
             environment=copy.copy(mock_env),
             raise_timeout_exception=True,
         )
@@ -157,8 +159,8 @@ def test_pass_custom_environment_to_process_and_add_another_value(mock_subproces
     with pytest.raises(NotImplementedError):
         procrunner.run(
             [mock.Mock()],
-            -1,
-            False,
+            timeout=-1,
+            debug=False,
             environment=copy.copy(mock_env1),
             environment_override=copy.copy(mock_env2),
             raise_timeout_exception=True,
@@ -175,8 +177,8 @@ def test_use_default_process_environment_and_add_another_value(mock_subprocess):
     with pytest.raises(NotImplementedError):
         procrunner.run(
             [mock.Mock()],
-            -1,
-            False,
+            timeout=-1,
+            debug=False,
             environment_override=copy.copy(mock_env2),
             raise_timeout_exception=True,
         )
@@ -204,8 +206,8 @@ def test_use_default_process_environment_and_override_a_value(mock_subprocess):
     with pytest.raises(NotImplementedError):
         procrunner.run(
             [mock.Mock()],
-            -1,
-            False,
+            timeout=-1,
+            debug=False,
             environment_override={
                 random_environment_variable: "X" + random_environment_value
             },
