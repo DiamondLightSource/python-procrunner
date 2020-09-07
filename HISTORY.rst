@@ -7,7 +7,7 @@ History
 * Calling the run() function with unnamed arguments (other than the command
   list as the first argument) is now deprecated. As a number of arguments
   will be removed in a future version the use of unnamed arguments will
-  cause future confusion. Use explicit keyword arguments instead.
+  cause future confusion. `Use explicit keyword arguments instead (#62). <https://github.com/DiamondLightSource/python-procrunner/pull/62>`_
 
 2.1.0 (2020-09-05)
 ------------------
