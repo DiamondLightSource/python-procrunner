@@ -488,7 +488,7 @@ def run(
         stdin_pipe = subprocess.PIPE
     if debug is not None:
         warnings.warn(
-            "Use of the debug parameter is deprecated", DeprecationWarning, stacklevel=2
+            "Use of the debug parameter is deprecated", DeprecationWarning, stacklevel=3
         )
 
     start_time = timeit.default_timer()
@@ -498,7 +498,7 @@ def run(
             warnings.warn(
                 "Using procrunner with timeout and without raise_timeout_exception set is deprecated",
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=3,
             )
 
     if environment is not None:
