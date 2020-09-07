@@ -2,8 +2,8 @@
 History
 =======
 
-2.2.0
------
+2.2.0 (2020-09-07)
+------------------
 * Calling the run() function with unnamed arguments (other than the command
   list as the first argument) is now deprecated. As a number of arguments
   will be removed in a future version the use of unnamed arguments will
