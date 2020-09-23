@@ -21,7 +21,7 @@ History
   The return object will become a subprocess.CompletedProcess in a future
   release, which no longer allows array-based access. For a translation table
   of array elements to attributes please see the pull request linked above.
-* Add a `new parameter 'raise_timeout_exceptions' (#61). <https://github.com/DiamondLightSource/python-procrunner/pull/61>`_
+* Add a `new parameter 'raise_timeout_exception' (#61). <https://github.com/DiamondLightSource/python-procrunner/pull/61>`_
   When set to 'True' a subprocess.TimeoutExpired exception is raised when the
   process runtime exceeds the timeout threshold. This defaults to 'False' and
   will be set to 'True' in a future release.
