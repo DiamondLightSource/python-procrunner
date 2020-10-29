@@ -132,6 +132,7 @@ class _NonBlockingStreamReader:
                 else:
                     if self._closing:
                         break
+            self._stream.close()
             self._terminated = True
             la.flush()
             if self._debug:
@@ -151,6 +152,7 @@ class _NonBlockingStreamReader:
                             print(linedecode)
                         if callback:
                             callback(linedecode)
+            self._stream.close()
             self._terminated = True
             if self._debug:
                 logger.debug("Stream reader terminated")
