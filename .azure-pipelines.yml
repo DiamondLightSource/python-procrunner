@@ -1,4 +1,15 @@
-jobs:
+trigger:
+  branches:
+    include:
+    - '*'
+  tags:
+    include:
+    - '*'
+
+stages:
+- stage: static
+  displayName: Static Analysis
+  jobs:
   - job: checks
     displayName: static code analysis
     pool:
@@ -21,6 +32,9 @@ jobs:
           python .azure-pipelines/flake8-validation.py
         displayName: Flake8 validation
 
+- stage: tests
+  displayName: Run unit tests
+  jobs:
   - job: linux
     pool:
       vmImage: ubuntu-latest
@@ -34,7 +48,6 @@ jobs:
           PYTHON_VERSION: 3.8
         python39:
           PYTHON_VERSION: 3.9
-
     steps:
     - template: .azure-pipelines/ci.yml
 
@@ -51,7 +64,6 @@ jobs:
           PYTHON_VERSION: 3.8
         python39:
           PYTHON_VERSION: 3.9
-
     steps:
     - template: .azure-pipelines/ci.yml
 
@@ -68,6 +80,45 @@ jobs:
           PYTHON_VERSION: 3.8
         python39:
           PYTHON_VERSION: 3.9
-
     steps:
     - template: .azure-pipelines/ci.yml
+
+- stage: deploy
+  displayName: Publish release
+  dependsOn:
+  - tests
+  - static
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  jobs:
+  - job: pypi
+    displayName: Publish pypi release
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - task: UsePythonVersion@0
+        displayName: Set up python
+        inputs:
+          versionSpec: 3.8
+
+      - bash: |
+          python -m pip install -r requirements_dev.txt
+        displayName: Install dependencies
+
+      - bash: |
+          python setup.py sdist bdist_wheel
+          ls -la dist
+        displayName: Build python package
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: dist/
+          artifactName: python-release
+
+      - task: TwineAuthenticate@1
+        displayName: Set up credentials
+        inputs:
+          pythonUploadServiceConnection: pypi-procrunner
+
+      - bash: |
+          python -m twine upload -r pypi-procrunner --config-file $(PYPIRC_PATH) dist/*.tar.gz dist/*.whl
+        displayName: Publish package
