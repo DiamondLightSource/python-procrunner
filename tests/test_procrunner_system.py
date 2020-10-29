@@ -40,11 +40,10 @@ def test_decode_invalid_utf8_input(capsys):
     assert err == ""
 
 
-def test_running_wget(tmpdir):
-    tmpdir.chdir()
+def test_running_wget(tmp_path):
     command = ["wget", "https://www.google.com", "-O", "-"]
     try:
-        result = procrunner.run(command)
+        result = procrunner.run(command, working_directory=tmp_path)
     except OSError as e:
         if e.errno == 2:
             pytest.skip("wget not available")
@@ -54,15 +53,17 @@ def test_running_wget(tmpdir):
     assert b"google" in result.stdout
 
 
-def test_path_object_resolution(tmpdir):
+def test_path_object_resolution(tmp_path):
     sentinel_value = b"sentinel"
-    tmpdir.join("tempfile").write(sentinel_value)
-    tmpdir.join("reader.py").write("with open('tempfile') as fh:\n    print(fh.read())")
+    tmp_path.joinpath("tempfile").write_bytes(sentinel_value)
+    tmp_path.joinpath("reader.py").write_text(
+        "with open('tempfile') as fh:\n    print(fh.read())"
+    )
     assert "LEAK_DETECTOR" not in os.environ
     result = procrunner.run(
-        [sys.executable, tmpdir.join("reader.py")],
+        [sys.executable, tmp_path / "reader.py"],
         environment_override={"PYTHONHASHSEED": "random", "LEAK_DETECTOR": "1"},
-        working_directory=tmpdir,
+        working_directory=tmp_path,
     )
     assert result.returncode == 0
     assert not result.stderr

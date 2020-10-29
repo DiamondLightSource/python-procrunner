@@ -1,6 +1,7 @@
 import copy
-import mock
+from unittest import mock
 import os
+import pathlib
 import procrunner
 import pytest
 import sys
@@ -86,13 +87,16 @@ def test_run_command_runs_command_and_directs_pipelines(
         timeout=0.5,
         callback_stdout=mock.sentinel.callback_stdout,
         callback_stderr=mock.sentinel.callback_stderr,
-        working_directory=mock.sentinel.cwd,
+        working_directory=pathlib.Path("somecwd"),
         raise_timeout_exception=True,
     )
 
     assert mock_subprocess.Popen.called
     assert mock_subprocess.Popen.call_args[1]["env"] == os.environ
-    assert mock_subprocess.Popen.call_args[1]["cwd"] == mock.sentinel.cwd
+    assert mock_subprocess.Popen.call_args[1]["cwd"] in (
+        pathlib.Path("somecwd"),
+        "somecwd",
+    )
     mock_streamreader.assert_has_calls(
         [
             mock.call(

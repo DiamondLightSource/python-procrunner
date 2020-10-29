@@ -26,8 +26,6 @@ jobs:
       vmImage: ubuntu-latest
     strategy:
       matrix:
-        python35:
-          PYTHON_VERSION: 3.5
         python36:
           PYTHON_VERSION: 3.6
         python37:
@@ -43,8 +41,6 @@ jobs:
       vmImage: macOS-latest
     strategy:
       matrix:
-        python35:
-          PYTHON_VERSION: 3.5
         python36:
           PYTHON_VERSION: 3.6
         python37:
@@ -60,8 +56,6 @@ jobs:
       vmImage: windows-latest
     strategy:
       matrix:
-        python35:
-          PYTHON_VERSION: 3.5
         python36:
           PYTHON_VERSION: 3.6
         python37:

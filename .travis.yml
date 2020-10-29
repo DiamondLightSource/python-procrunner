@@ -12,7 +12,6 @@ matrix:
     - python: 3.8
     - python: 3.7
     - python: 3.6
-    - python: 3.5
     - os: osx
       language: generic
       env: CONDA=3.8 TOXENV=py38
@@ -22,9 +21,6 @@ matrix:
     - os: osx
       language: generic
       env: CONDA=3.6 TOXENV=py36
-    - os: osx
-      language: generic
-      env: CONDA=3.5 TOXENV=py35
 
   allow_failures:
     - env: OPTIONAL=1

@@ -275,7 +275,7 @@ def _path_resolve(obj):
     return obj
 
 
-def _windows_resolve(command):
+def _windows_resolve(command, path=None):
     """
     Try and find the full path and file extension of the executable to run.
     This is so that e.g. calls to 'somescript' will point at 'somescript.cmd'
@@ -290,7 +290,7 @@ def _windows_resolve(command):
     if not command or not isinstance(command[0], str):
         return command
 
-    found_executable = shutil.which(command[0])
+    found_executable = shutil.which(command[0], path=path)
     if found_executable:
         logger.debug("Resolved %s as %s", command[0], found_executable)
         return (found_executable, *command[1:])
@@ -299,7 +299,7 @@ def _windows_resolve(command):
         # Special case. shutil.which may not detect file extensions if a full
         # path is given, so try to resolve the executable explicitly
         for extension in os.getenv("PATHEXT").split(os.pathsep):
-            found_executable = shutil.which(command[0] + extension)
+            found_executable = shutil.which(command[0] + extension, path=path)
             if found_executable:
                 return (found_executable, *command[1:])
 
@@ -335,7 +335,7 @@ class ReturnObject(subprocess.CompletedProcess):
         if key in self._extras:
             return self._extras[key]
         if not hasattr(self, key):
-            raise KeyError("Unknown attribute {key}".format(key=key))
+            raise KeyError(f"Unknown attribute {key}")
         return getattr(self, key)
 
     def __eq__(self, other):
@@ -518,11 +518,13 @@ def run(
     command = tuple(_path_resolve(part) for part in command)
     if win32resolve and sys.platform == "win32":
         command = _windows_resolve(command)
+    if working_directory and sys.version_info < (3, 7):
+        working_directory = os.fspath(working_directory)
 
     p = subprocess.Popen(
         command,
         shell=False,
-        cwd=_path_resolve(working_directory),
+        cwd=working_directory,
         env=env,
         stdin=stdin_pipe,
         stdout=subprocess.PIPE,
