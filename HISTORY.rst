@@ -5,6 +5,7 @@ History
 2.3.0 (????-??-??)
 ------------------
 * Python 3.6+ only, support for Python 3.5 has been dropped
+* Fix a file descriptor leak on subprocess execution
 
 2.2.0 (2020-09-07)
 ------------------
