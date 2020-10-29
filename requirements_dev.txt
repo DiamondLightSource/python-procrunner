@@ -1,6 +1,6 @@
 bump2version==1.0.0
 coverage==5.3
-flake8==3.8.3
+flake8==3.8.4
 pip==20.2.3
 pytest==6.1.0
 Sphinx==3.2.1
