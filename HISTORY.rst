@@ -2,7 +2,7 @@
 History
 =======
 
-2.3.0 (????-??-??)
+2.3.0 (2020-10-29)
 ------------------
 * Add Python 3.9 support, drop Python 3.5 support
 * Fix a file descriptor leak on subprocess execution
