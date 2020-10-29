@@ -58,27 +58,25 @@ def test_name_resolution_for_simple_exe():
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="windows specific test only")
-def test_name_resolution_for_complex_cases(tmpdir):
-    tmpdir.chdir()
-
+def test_name_resolution_for_complex_cases(tmp_path):
     bat = "simple_bat_extension"
     cmd = "simple_cmd_extension"
     exe = "simple_exe_extension"
     dotshort = "more_complex_filename_with_a.dot"
     dotlong = "more_complex_filename.withadot"
 
-    (tmpdir / bat + ".bat").ensure()
-    (tmpdir / cmd + ".cmd").ensure()
-    (tmpdir / exe + ".exe").ensure()
-    (tmpdir / dotshort + ".bat").ensure()
-    (tmpdir / dotlong + ".cmd").ensure()
+    (tmp_path / (bat + ".bat")).touch()
+    (tmp_path / (cmd + ".cmd")).touch()
+    (tmp_path / (exe + ".exe")).touch()
+    (tmp_path / (dotshort + ".bat")).touch()
+    (tmp_path / (dotlong + ".cmd")).touch()
 
     def is_valid(command):
         assert len(command) == 1
-        assert os.path.exists(command[0])
+        assert os.path.exists(tmp_path / command[0])
 
-    is_valid(procrunner._windows_resolve([bat]))
-    is_valid(procrunner._windows_resolve([cmd]))
-    is_valid(procrunner._windows_resolve([exe]))
-    is_valid(procrunner._windows_resolve([dotshort]))
-    is_valid(procrunner._windows_resolve([dotlong]))
+    is_valid(procrunner._windows_resolve([bat], path=os.fspath(tmp_path)))
+    is_valid(procrunner._windows_resolve([cmd], path=os.fspath(tmp_path)))
+    is_valid(procrunner._windows_resolve([exe], path=os.fspath(tmp_path)))
+    is_valid(procrunner._windows_resolve([dotshort], path=os.fspath(tmp_path)))
+    is_valid(procrunner._windows_resolve([dotlong], path=os.fspath(tmp_path)))
