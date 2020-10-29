@@ -13,7 +13,7 @@ requirements = []
 
 setup_requirements = []
 
-test_requirements = ["mock", "pytest"]
+test_requirements = ["pytest"]
 
 setup(
     author="Markus Gerstel",
