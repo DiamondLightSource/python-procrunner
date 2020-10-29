@@ -57,7 +57,7 @@ def test_running_wget(tmpdir):
 def test_path_object_resolution(tmpdir):
     sentinel_value = b"sentinel"
     tmpdir.join("tempfile").write(sentinel_value)
-    tmpdir.join("reader.py").write("print(open('tempfile').read())")
+    tmpdir.join("reader.py").write("with open('tempfile') as fh:\n    print(fh.read())")
     assert "LEAK_DETECTOR" not in os.environ
     result = procrunner.run(
         [sys.executable, tmpdir.join("reader.py")],
