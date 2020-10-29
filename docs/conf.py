@@ -48,8 +48,8 @@ master_doc = "index"
 
 # General information about the project.
 project = "ProcRunner"
-copyright = "2020, Markus Gerstel"
-author = "Markus Gerstel"
+copyright = "2020, Diamond Light Source"
+author = "Diamond Light Source - Scientific Software"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -128,8 +128,8 @@ latex_documents = [
     (
         master_doc,
         "procrunner.tex",
-        "ProcRunner Documentation",
-        "Markus Gerstel",
+        "procrunner Documentation",
+        "Diamond Light Source - Scientific Software",
         "manual",
     )
 ]
@@ -139,7 +139,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "procrunner", "ProcRunner Documentation", [author], 1)]
+man_pages = [(master_doc, "procrunner", "procrunner Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------
@@ -151,10 +151,10 @@ texinfo_documents = [
     (
         master_doc,
         "procrunner",
-        "ProcRunner Documentation",
+        "procrunner Documentation",
         author,
         "procrunner",
-        "One line description of project.",
+        "Versatile utility function to run external processes",
         "Miscellaneous",
     )
 ]

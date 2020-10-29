@@ -1,4 +1,5 @@
 import codecs
+import functools
 import io
 import logging
 import os
@@ -52,7 +53,7 @@ from threading import Thread
 
 __author__ = """Markus Gerstel"""
 __email__ = "scientificsoftware@diamond.ac.uk"
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 logger = logging.getLogger("procrunner")
 logger.addHandler(logging.NullHandler())
@@ -209,7 +210,6 @@ class _NonBlockingStreamWriter:
         self._buffer = data
         self._buffer_len = len(data)
         self._buffer_pos = 0
-        self._debug = debug
         self._max_block_len = 4096
         self._stream = stream
         self._terminated = False
@@ -413,10 +413,26 @@ class ReturnObject(subprocess.CompletedProcess):
         self._extras.update(dictionary)
 
 
+def _deprecate_argument_calling(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        if len(args) > 1:
+            warnings.warn(
+                "Calling procrunner.run() with unnamed arguments (apart from "
+                "the command) is deprecated. Use keyword arguments instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
+@_deprecate_argument_calling
 def run(
     command,
     timeout=None,
-    debug=False,
+    debug=None,
     stdin=None,
     print_stdout=True,
     print_stderr=True,
@@ -436,7 +452,7 @@ def run(
 
     :param array command: Command line to be run, specified as array.
     :param timeout: Terminate program execution after this many seconds.
-    :param boolean debug: Enable further debug messages.
+    :param boolean debug: Enable further debug messages. (deprecated)
     :param stdin: Optional bytestring that is passed to command stdin.
     :param boolean print_stdout: Pass stdout through to sys.stdout.
     :param boolean print_stderr: Pass stderr through to sys.stderr.
@@ -470,6 +486,10 @@ def run(
     else:
         assert sys.platform != "win32", "stdin argument not supported on Windows"
         stdin_pipe = subprocess.PIPE
+    if debug is not None:
+        warnings.warn(
+            "Use of the debug parameter is deprecated", DeprecationWarning, stacklevel=3
+        )
 
     start_time = timeit.default_timer()
     if timeout is not None:
@@ -478,7 +498,7 @@ def run(
             warnings.warn(
                 "Using procrunner with timeout and without raise_timeout_exception set is deprecated",
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=3,
             )
 
     if environment is not None:
