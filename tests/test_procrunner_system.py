@@ -130,3 +130,14 @@ def test_argument_deprecation(tmp_path):
         )
     assert not result.returncode
     assert result.stderr or result.stdout
+
+
+def test_unicode_output(tmp_path):
+    command = (sys.executable, "-c", 'print("\u2603")')
+    result = procrunner.run(
+        command,
+        working_directory=tmp_path,
+    )
+    assert result.returncode == 0
+    assert result.stderr == b""
+    assert result.stdout.rstrip() == b"\xe2\x98\x83"
