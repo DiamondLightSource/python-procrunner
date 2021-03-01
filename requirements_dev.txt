@@ -3,7 +3,7 @@ coverage==5.5
 flake8==3.8.4
 pip==21.0.1
 pytest==6.2.2
-Sphinx==3.4.3
-tox==3.21.3
+Sphinx==3.5.1
+tox==3.22.0
 twine==3.3.0
 wheel==0.36.2
