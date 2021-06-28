@@ -1,10 +1,12 @@
 import copy
-from unittest import mock
 import os
 import pathlib
-import procrunner
-import pytest
 import sys
+from unittest import mock
+
+import pytest
+
+import procrunner
 
 
 @mock.patch("procrunner._NonBlockingStreamReader")

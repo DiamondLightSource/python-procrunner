@@ -11,7 +11,7 @@ ProcRunner
         :target: https://anaconda.org/conda-forge/procrunner
         :alt: Conda Version
 
-.. image:: https://dev.azure.com/procrunner/procrunner/_apis/build/status/CI?branchName=master
+.. image:: https://dev.azure.com/DLS-tooling/procrunner/_apis/build/status/CI?branchName=master
         :target: https://github.com/DiamondLightSource/python-procrunner/commits/master
         :alt: Build status
 

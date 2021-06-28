@@ -3,8 +3,9 @@ import subprocess
 import sys
 import timeit
 
-import procrunner
 import pytest
+
+import procrunner
 
 
 def test_simple_command_invocation():

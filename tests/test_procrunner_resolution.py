@@ -1,8 +1,9 @@
 import os
 import sys
 
-import procrunner
 import pytest
+
+import procrunner
 
 
 def PEP519(path):
