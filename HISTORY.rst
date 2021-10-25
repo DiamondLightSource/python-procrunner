@@ -2,6 +2,10 @@
 History
 =======
 
+2.3.1 (2021-10-25)
+------------------
+* Add Python 3.10 support
+
 2.3.0 (2020-10-29)
 ------------------
 * Add Python 3.9 support, drop Python 3.5 support
