@@ -383,8 +383,6 @@ def run(
     command = tuple(_path_resolve(part) for part in command)
     if win32resolve and sys.platform == "win32":
         command = _windows_resolve(command)
-    if working_directory and sys.version_info < (3, 7):
-        working_directory = os.fspath(working_directory)
 
     p = subprocess.Popen(
         command,
