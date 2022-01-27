@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import codecs
 import functools
 import io
@@ -51,8 +53,6 @@ from threading import Thread
 # result.time_start == '2017-11-12 19:54:49 GMT'
 # result.timeout == False
 
-__author__ = """Markus Gerstel"""
-__email__ = "scientificsoftware@diamond.ac.uk"
 __version__ = "2.3.1"
 
 logger = logging.getLogger("procrunner")
