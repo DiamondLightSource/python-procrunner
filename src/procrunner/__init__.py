@@ -13,7 +13,7 @@ import timeit
 import warnings
 from multiprocessing import Pipe
 from threading import Thread
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 #
 #  run() - A function to synchronously run an external process, supporting
@@ -313,7 +313,7 @@ def run(
     environment_override: Optional[dict[str, str]] = None,
     win32resolve: bool = True,
     working_directory: Optional[str] = None,
-    raise_timeout_exception: bool = False,
+    raise_timeout_exception: Any = ...,
 ) -> subprocess.CompletedProcess:
     """
     Run an external process.
@@ -339,11 +339,7 @@ def run(
                                  extension.
     :param string working_directory: If specified, run the executable from
                                      within this working directory.
-    :param boolean raise_timeout_exception: Forward compatibility flag. If set
-                             then a subprocess.TimeoutExpired exception is raised
-                             instead of returning an object that can be checked
-                             for a timeout condition. Defaults to False, will be
-                             changed to True in a future release.
+    :param boolean raise_timeout_exception: Deprecated compatibility flag.
     :return: The exit code, stdout, stderr (separately, as byte strings)
              as a subprocess.CompletedProcess object.
     """
@@ -359,12 +355,18 @@ def run(
     start_time = timeit.default_timer()
     if timeout is not None:
         max_time = start_time + timeout
-        if not raise_timeout_exception:
-            warnings.warn(
-                "Using procrunner with timeout and without raise_timeout_exception set is deprecated",
-                DeprecationWarning,
-                stacklevel=3,
-            )
+    if not raise_timeout_exception:
+        warnings.warn(
+            "Using procrunner with raise_timeout_exception=False is no longer supported",
+            UserWarning,
+            stacklevel=3,
+        )
+    elif raise_timeout_exception is True:
+        warnings.warn(
+            "The raise_timeout_exception argument is deprecated and will be removed in a future release",
+            DeprecationWarning,
+            stacklevel=3,
+        )
 
     if environment is not None:
         env = {key: _path_resolve(environment[key]) for key in environment}
@@ -503,7 +505,7 @@ def run(
     output_stdout = stdout.get_output()
     output_stderr = stderr.get_output()
 
-    if timeout is not None and timeout_encountered and raise_timeout_exception:
+    if timeout is not None and timeout_encountered:
         raise subprocess.TimeoutExpired(
             cmd=command, timeout=timeout, output=output_stdout, stderr=output_stderr
         )

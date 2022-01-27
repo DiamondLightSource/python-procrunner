@@ -8,6 +8,10 @@ History
 * The run() function now returns a subprocess.CompletedProcess object,
   which no longer allows array access operations
   (those were deprecated in `#60 <https://github.com/DiamondLightSource/python-procrunner/pull/60>`_)
+* The run() argument 'raise_timeout_exception' is now set by default,
+  a 'False' value will lead to a UserWarning and a behavioural change.
+  The argument is now deprecated and will be removed in a future version.
+  (previously introduced in `#61 <https://github.com/DiamondLightSource/python-procrunner/pull/61>`_)
 * Calling the run() function with multiple unnamed arguments is no longer supported
   (previously deprecated in `#62 <https://github.com/DiamondLightSource/python-procrunner/pull/62>`_)
 * The run() function no longer accepts a 'debug' argument

@@ -76,16 +76,18 @@ def test_path_object_resolution(tmp_path):
     ), "overridden environment variable leaked into parent process"
 
 
-def test_timeout_behaviour_legacy(tmp_path):
+def test_timeout_behaviour_old_legacy(tmp_path):
+    command = (sys.executable, "-c", "import time; time.sleep(5)")
     start = timeit.default_timer()
     try:
-        with pytest.warns(DeprecationWarning, match="timeout"):
-            result = procrunner.run(
-                [sys.executable, "-c", "import time; time.sleep(5)"],
-                timeout=0.1,
-                working_directory=tmp_path,
-                raise_timeout_exception=False,
-            )
+        with pytest.raises(subprocess.TimeoutExpired) as te:
+            with pytest.warns(UserWarning, match="timeout"):
+                procrunner.run(
+                    command,
+                    timeout=0.1,
+                    working_directory=tmp_path,
+                    raise_timeout_exception=False,
+                )
     except RuntimeError:
         # This test sometimes fails with a RuntimeError.
         runtime = timeit.default_timer() - start
@@ -93,9 +95,35 @@ def test_timeout_behaviour_legacy(tmp_path):
         return
     runtime = timeit.default_timer() - start
     assert runtime < 3
-    assert not result.stdout
-    assert not result.stderr
-    assert result.returncode
+    assert te.value.stdout == b""
+    assert te.value.stderr == b""
+    assert te.value.timeout == 0.1
+    assert te.value.cmd == command
+
+
+def test_timeout_behaviour_legacy(tmp_path):
+    command = (sys.executable, "-c", "import time; time.sleep(5)")
+    start = timeit.default_timer()
+    try:
+        with pytest.raises(subprocess.TimeoutExpired) as te:
+            with pytest.warns(DeprecationWarning, match="timeout"):
+                procrunner.run(
+                    command,
+                    timeout=0.1,
+                    working_directory=tmp_path,
+                    raise_timeout_exception=True,
+                )
+    except RuntimeError:
+        # This test sometimes fails with a RuntimeError.
+        runtime = timeit.default_timer() - start
+        assert runtime < 3
+        return
+    runtime = timeit.default_timer() - start
+    assert runtime < 3
+    assert te.value.stdout == b""
+    assert te.value.stderr == b""
+    assert te.value.timeout == 0.1
+    assert te.value.cmd == command
 
 
 def test_timeout_behaviour(tmp_path):
@@ -107,7 +135,6 @@ def test_timeout_behaviour(tmp_path):
                 command,
                 timeout=0.1,
                 working_directory=tmp_path,
-                raise_timeout_exception=True,
             )
     except RuntimeError:
         # This test sometimes fails with a RuntimeError.
