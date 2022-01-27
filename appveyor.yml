@@ -18,6 +18,7 @@ install:
   # Upgrade to the latest pip.
   - '%PYTHON%\\python.exe -m pip install -U pip setuptools wheel'
   - '%PYTHON%\\python.exe -m pip install -r requirements_dev.txt'
+  - '%PYTHON%\\python.exe -m pip install .'
 
 build: off
 
