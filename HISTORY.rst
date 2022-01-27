@@ -8,6 +8,8 @@ History
 * The run() function now returns a subprocess.CompletedProcess object,
   which no longer allows array access operations
   (those were deprecated in `#60 <https://github.com/DiamondLightSource/python-procrunner/pull/60>`_)
+* Calling the run() function with multiple unnamed arguments is no longer supported
+  (previously deprecated in `#62 <https://github.com/DiamondLightSource/python-procrunner/pull/62>`_)
 
 2.3.1 (2021-10-25)
 ------------------

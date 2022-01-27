@@ -120,14 +120,3 @@ def test_timeout_behaviour(tmp_path):
     assert te.value.stderr == b""
     assert te.value.timeout == 0.1
     assert te.value.cmd == command
-
-
-def test_argument_deprecation(tmp_path):
-    with pytest.warns(DeprecationWarning, match="keyword arguments"):
-        result = procrunner.run(
-            [sys.executable, "-V"],
-            None,
-            working_directory=tmp_path,
-        )
-    assert not result.returncode
-    assert result.stderr or result.stdout

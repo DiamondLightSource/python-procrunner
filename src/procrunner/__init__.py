@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import codecs
-import functools
 import io
 import logging
 import os
@@ -14,6 +13,7 @@ import timeit
 import warnings
 from multiprocessing import Pipe
 from threading import Thread
+from typing import Callable, Optional
 
 #
 #  run() - A function to synchronously run an external process, supporting
@@ -300,36 +300,21 @@ def _windows_resolve(command, path=None):
     return command
 
 
-def _deprecate_argument_calling(f):
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        if len(args) > 1:
-            warnings.warn(
-                "Calling procrunner.run() with unnamed arguments (apart from "
-                "the command) is deprecated. Use keyword arguments instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        return f(*args, **kwargs)
-
-    return wrapper
-
-
-@_deprecate_argument_calling
 def run(
     command,
-    timeout=None,
+    *,
+    timeout: Optional[float] = None,
     debug=None,
-    stdin=None,
-    print_stdout=True,
-    print_stderr=True,
-    callback_stdout=None,
-    callback_stderr=None,
-    environment=None,
-    environment_override=None,
-    win32resolve=True,
-    working_directory=None,
-    raise_timeout_exception=False,
+    stdin: Optional[bytes] = None,
+    print_stdout: bool = True,
+    print_stderr: bool = True,
+    callback_stdout: Optional[Callable] = None,
+    callback_stderr: Optional[Callable] = None,
+    environment: Optional[dict[str, str]] = None,
+    environment_override: Optional[dict[str, str]] = None,
+    win32resolve: bool = True,
+    working_directory: Optional[str] = None,
+    raise_timeout_exception: bool = False,
 ) -> subprocess.CompletedProcess:
     """
     Run an external process.
@@ -437,7 +422,7 @@ def run(
     if stdin is not None:
         notifyee, notifier = Pipe(False)
         thread_pipe_pool.append(notifyee)
-        stdin = _NonBlockingStreamWriter(
+        _NonBlockingStreamWriter(
             p.stdin, data=stdin, debug=debug, notify=notifier.close
         )
 
@@ -531,14 +516,17 @@ def run(
             "Process ended after %.1f seconds with exit code %d", runtime, p.returncode
         )
 
-    stdout = stdout.get_output()
-    stderr = stderr.get_output()
+    output_stdout = stdout.get_output()
+    output_stderr = stderr.get_output()
 
-    if timeout_encountered and raise_timeout_exception:
+    if timeout is not None and timeout_encountered and raise_timeout_exception:
         raise subprocess.TimeoutExpired(
-            cmd=command, timeout=timeout, output=stdout, stderr=stderr
+            cmd=command, timeout=timeout, output=output_stdout, stderr=output_stderr
         )
 
     return subprocess.CompletedProcess(
-        args=command, returncode=p.returncode, stdout=stdout, stderr=stderr
+        args=command,
+        returncode=p.returncode,
+        stdout=output_stdout,
+        stderr=output_stderr,
     )
