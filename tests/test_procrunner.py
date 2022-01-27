@@ -26,7 +26,7 @@ def test_run_command_aborts_after_timeout_legacy(
 
     with pytest.raises(RuntimeError):
         with pytest.warns(DeprecationWarning, match="timeout"):
-            procrunner.run(task, timeout=-1, debug=False)
+            procrunner.run(task, timeout=-1)
 
     assert mock_subprocess.Popen.called
     assert mock_process.terminate.called
@@ -95,14 +95,12 @@ def test_run_command_runs_command_and_directs_pipelines(
             mock.call(
                 stream_stdout,
                 output=mock.ANY,
-                debug=None,
                 notify=mock.ANY,
                 callback=mock.sentinel.callback_stdout,
             ),
             mock.call(
                 stream_stderr,
                 output=mock.ANY,
-                debug=None,
                 notify=mock.ANY,
                 callback=mock.sentinel.callback_stderr,
             ),
@@ -126,17 +124,6 @@ def test_default_process_environment_is_parent_environment(mock_subprocess):
     with pytest.raises(NotImplementedError):
         procrunner.run([mock.Mock()], timeout=-1, raise_timeout_exception=True)
     assert mock_subprocess.Popen.call_args[1]["env"] == os.environ
-
-
-@mock.patch("procrunner.subprocess")
-def test_using_debug_parameter_raises_warning(mock_subprocess):
-    mock_subprocess.Popen.side_effect = NotImplementedError()  # cut calls short
-    with pytest.warns(DeprecationWarning, match="debug"):
-        with pytest.raises(NotImplementedError):
-            procrunner.run([mock.Mock()], debug=True)
-    with pytest.warns(DeprecationWarning, match="debug"):
-        with pytest.raises(NotImplementedError):
-            procrunner.run([mock.Mock()], debug=False)
 
 
 @mock.patch("procrunner.subprocess")

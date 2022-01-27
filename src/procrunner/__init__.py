@@ -304,7 +304,6 @@ def run(
     command,
     *,
     timeout: Optional[float] = None,
-    debug=None,
     stdin: Optional[bytes] = None,
     print_stdout: bool = True,
     print_stderr: bool = True,
@@ -324,7 +323,6 @@ def run(
 
     :param array command: Command line to be run, specified as array.
     :param timeout: Terminate program execution after this many seconds.
-    :param boolean debug: Enable further debug messages. (deprecated)
     :param stdin: Optional bytestring that is passed to command stdin.
     :param boolean print_stdout: Pass stdout through to sys.stdout.
     :param boolean print_stderr: Pass stderr through to sys.stderr.
@@ -357,10 +355,6 @@ def run(
     else:
         assert sys.platform != "win32", "stdin argument not supported on Windows"
         stdin_pipe = subprocess.PIPE
-    if debug is not None:
-        warnings.warn(
-            "Use of the debug parameter is deprecated", DeprecationWarning, stacklevel=3
-        )
 
     start_time = timeit.default_timer()
     if timeout is not None:
@@ -406,7 +400,6 @@ def run(
     stdout = _NonBlockingStreamReader(
         p.stdout,
         output=print_stdout,
-        debug=debug,
         notify=notifier.close,
         callback=callback_stdout,
     )
@@ -415,25 +408,19 @@ def run(
     stderr = _NonBlockingStreamReader(
         p.stderr,
         output=print_stderr,
-        debug=debug,
         notify=notifier.close,
         callback=callback_stderr,
     )
     if stdin is not None:
         notifyee, notifier = Pipe(False)
         thread_pipe_pool.append(notifyee)
-        _NonBlockingStreamWriter(
-            p.stdin, data=stdin, debug=debug, notify=notifier.close
-        )
+        _NonBlockingStreamWriter(p.stdin, data=stdin, notify=notifier.close)
 
     timeout_encountered = False
 
     while (p.returncode is None) and (
         (timeout is None) or (timeit.default_timer() < max_time)
     ):
-        if debug and timeout is not None:
-            logger.debug("still running (T%.2fs)", timeit.default_timer() - max_time)
-
         # wait for some time or until a stream is closed
         try:
             if thread_pipe_pool:
@@ -450,8 +437,6 @@ def run(
                 if event:
                     # One-shot, so remove stream and watch remaining streams
                     thread_pipe_pool.pop(0)
-                    if debug:
-                        logger.debug("Event received from stream thread")
             else:
                 time.sleep(0.5)
         except KeyboardInterrupt:
@@ -465,8 +450,7 @@ def run(
     if p.returncode is None:
         # timeout condition
         timeout_encountered = True
-        if debug:
-            logger.debug("timeout (T%.2fs)", timeit.default_timer() - max_time)
+        logger.debug("timeout (T%.2fs)", timeit.default_timer() - max_time)
 
         # send terminate signal and wait some time for buffers to be read
         p.terminate()

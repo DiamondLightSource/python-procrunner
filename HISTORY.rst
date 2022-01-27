@@ -10,6 +10,8 @@ History
   (those were deprecated in `#60 <https://github.com/DiamondLightSource/python-procrunner/pull/60>`_)
 * Calling the run() function with multiple unnamed arguments is no longer supported
   (previously deprecated in `#62 <https://github.com/DiamondLightSource/python-procrunner/pull/62>`_)
+* The run() function no longer accepts a 'debug' argument
+  (previously deprecated in `#63 <https://github.com/DiamondLightSource/python-procrunner/pull/63>`_)
 
 2.3.1 (2021-10-25)
 ------------------
