@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import subprocess
 import sys
@@ -90,8 +92,6 @@ def test_timeout_behaviour_legacy(tmp_path):
         assert runtime < 3
         return
     runtime = timeit.default_timer() - start
-    with pytest.warns(DeprecationWarning, match="\\.timeout"):
-        assert result.timeout
     assert runtime < 3
     assert not result.stdout
     assert not result.stderr

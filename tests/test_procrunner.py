@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import os
 import pathlib
@@ -73,17 +75,6 @@ def test_run_command_runs_command_and_directs_pipelines(
     mock_streamreader.side_effect = streamreader_processing
     mock_subprocess.Popen.return_value = mock_process
 
-    expected = {
-        "stderr": mock.sentinel.proc_stderr,
-        "stdout": mock.sentinel.proc_stdout,
-        "exitcode": mock_process.returncode,
-        "command": tuple(command),
-        "runtime": mock.ANY,
-        "timeout": False,
-        "time_start": mock.ANY,
-        "time_end": mock.ANY,
-    }
-
     actual = procrunner.run(
         command,
         timeout=0.5,
@@ -120,13 +111,13 @@ def test_run_command_runs_command_and_directs_pipelines(
     )
     assert not mock_process.terminate.called
     assert not mock_process.kill.called
-    for key in expected:
-        with pytest.warns(DeprecationWarning):
-            assert actual[key] == expected[key]
-    assert actual.args == tuple(command)
-    assert actual.returncode == mock_process.returncode
-    assert actual.stdout == mock.sentinel.proc_stdout
-    assert actual.stderr == mock.sentinel.proc_stderr
+    assert actual == mock_subprocess.CompletedProcess.return_value
+    mock_subprocess.CompletedProcess.assert_called_once_with(
+        args=tuple(command),
+        returncode=mock_process.returncode,
+        stdout=mock.sentinel.proc_stdout,
+        stderr=mock.sentinel.proc_stderr,
+    )
 
 
 @mock.patch("procrunner.subprocess")
@@ -304,54 +295,3 @@ def test_lineaggregator_aggregates_data():
     callback.assert_not_called()
     aggregator.flush()
     callback.assert_called_once_with("morestuff")
-
-
-def test_return_object_semantics():
-    ro = procrunner.ReturnObject(
-        command=mock.sentinel.command,
-        exitcode=0,
-        stdout=mock.sentinel.stdout,
-        stderr=mock.sentinel.stderr,
-    )
-    with pytest.warns(DeprecationWarning):
-        assert ro["command"] == mock.sentinel.command
-    assert ro.args == mock.sentinel.command
-    with pytest.warns(DeprecationWarning):
-        assert ro["exitcode"] == 0
-    assert ro.returncode == 0
-    with pytest.warns(DeprecationWarning):
-        assert ro["stdout"] == mock.sentinel.stdout
-    assert ro.stdout == mock.sentinel.stdout
-    with pytest.warns(DeprecationWarning):
-        assert ro["stderr"] == mock.sentinel.stderr
-    assert ro.stderr == mock.sentinel.stderr
-
-    with pytest.raises(KeyError):
-        with pytest.warns(DeprecationWarning):
-            ro["unknownkey"]
-    ro.update({"unknownkey": mock.sentinel.key})
-    with pytest.warns(DeprecationWarning):
-        assert ro["unknownkey"] == mock.sentinel.key
-
-
-def test_return_object_check_function_passes_on_success():
-    ro = procrunner.ReturnObject(
-        command=mock.sentinel.command,
-        exitcode=0,
-        stdout=mock.sentinel.stdout,
-        stderr=mock.sentinel.stderr,
-    )
-    ro.check_returncode()
-
-
-def test_return_object_check_function_raises_on_error():
-    ro = procrunner.ReturnObject(
-        command=mock.sentinel.command,
-        exitcode=1,
-        stdout=mock.sentinel.stdout,
-        stderr=mock.sentinel.stderr,
-    )
-    with pytest.raises(Exception) as e:
-        ro.check_returncode()
-    assert repr(mock.sentinel.command) in str(e.value)
-    assert "1" in str(e.value)

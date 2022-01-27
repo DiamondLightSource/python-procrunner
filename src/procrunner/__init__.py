@@ -39,19 +39,12 @@ from threading import Thread
 #
 #  Returns:
 #
-# ReturnObject(
+# subprocess.CompletedProcess(
 #   args=('/bin/ls', '/some/path/containing spaces'),
 #   returncode=2,
 #   stdout=b'',
 #   stderr=b'/bin/ls: cannot access /some/path/containing spaces: No such file or directory\n'
 # )
-#
-# which also offers (albeit deprecated)
-#
-# result.runtime == 0.12990689277648926
-# result.time_end == '2017-11-12 19:54:49 GMT'
-# result.time_start == '2017-11-12 19:54:49 GMT'
-# result.timeout == False
 
 __version__ = "2.3.1"
 
@@ -307,114 +300,6 @@ def _windows_resolve(command, path=None):
     return command
 
 
-class ReturnObject(subprocess.CompletedProcess):
-    """
-    A subprocess.CompletedProcess-like object containing the executed
-    command, stdout and stderr (both as bytestrings), and the exitcode.
-    The check_returncode() function raises an exception if the process
-    exited with a non-zero exit code.
-    """
-
-    def __init__(self, exitcode=None, command=None, stdout=None, stderr=None, **kw):
-        super().__init__(
-            args=command, returncode=exitcode, stdout=stdout, stderr=stderr
-        )
-        self._extras = {
-            "timeout": kw.get("timeout"),
-            "runtime": kw.get("runtime"),
-            "time_start": kw.get("time_start"),
-            "time_end": kw.get("time_end"),
-        }
-
-    def __getitem__(self, key):
-        warnings.warn(
-            "dictionary access to a procrunner return object is deprecated",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        if key in self._extras:
-            return self._extras[key]
-        if not hasattr(self, key):
-            raise KeyError(f"Unknown attribute {key}")
-        return getattr(self, key)
-
-    def __eq__(self, other):
-        """Override equality operator to account for added fields"""
-        if type(other) is type(self):
-            return self.__dict__ == other.__dict__
-        return False
-
-    def __hash__(self):
-        """This object is not immutable, so mark it as unhashable"""
-        return None
-
-    @property
-    def cmd(self):
-        warnings.warn(
-            "procrunner return object .cmd is deprecated, use .args",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.args
-
-    @property
-    def command(self):
-        warnings.warn(
-            "procrunner return object .command is deprecated, use .args",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.args
-
-    @property
-    def exitcode(self):
-        warnings.warn(
-            "procrunner return object .exitcode is deprecated, use .returncode",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.returncode
-
-    @property
-    def timeout(self):
-        warnings.warn(
-            "procrunner return object .timeout is deprecated",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._extras["timeout"]
-
-    @property
-    def runtime(self):
-        warnings.warn(
-            "procrunner return object .runtime is deprecated",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._extras["runtime"]
-
-    @property
-    def time_start(self):
-        warnings.warn(
-            "procrunner return object .time_start is deprecated",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._extras["time_start"]
-
-    @property
-    def time_end(self):
-        warnings.warn(
-            "procrunner return object .time_end is deprecated",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._extras["time_end"]
-
-    def update(self, dictionary):
-        self._extras.update(dictionary)
-
-
 def _deprecate_argument_calling(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
@@ -445,7 +330,7 @@ def run(
     win32resolve=True,
     working_directory=None,
     raise_timeout_exception=False,
-):
+) -> subprocess.CompletedProcess:
     """
     Run an external process.
 
@@ -480,7 +365,6 @@ def run(
              as a subprocess.CompletedProcess object.
     """
 
-    time_start = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
     logger.debug("Starting external process: %s", command)
 
     if stdin is None:
@@ -655,23 +539,6 @@ def run(
             cmd=command, timeout=timeout, output=stdout, stderr=stderr
         )
 
-    time_end = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
-    result = ReturnObject(
-        exitcode=p.returncode,
-        command=command,
-        stdout=stdout,
-        stderr=stderr,
-        timeout=timeout_encountered,
-        runtime=runtime,
-        time_start=time_start,
-        time_end=time_end,
+    return subprocess.CompletedProcess(
+        args=command, returncode=p.returncode, stdout=stdout, stderr=stderr
     )
-    if stdin is not None:
-        result.update(
-            {
-                "stdin_bytes_sent": stdin.bytes_sent(),
-                "stdin_bytes_remain": stdin.bytes_remaining(),
-            }
-        )
-
-    return result
