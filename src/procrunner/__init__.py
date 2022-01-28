@@ -13,7 +13,7 @@ import timeit
 import warnings
 from multiprocessing import Pipe
 from threading import Thread
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Union
 
 #
 #  run() - A function to synchronously run an external process, supporting
@@ -304,7 +304,7 @@ def run(
     command,
     *,
     timeout: Optional[float] = None,
-    stdin: Optional[bytes] = None,
+    stdin: Optional[Union[bytes, int]] = None,
     print_stdout: bool = True,
     print_stderr: bool = True,
     callback_stdout: Optional[Callable] = None,
@@ -323,7 +323,8 @@ def run(
 
     :param array command: Command line to be run, specified as array.
     :param timeout: Terminate program execution after this many seconds.
-    :param stdin: Optional bytestring that is passed to command stdin.
+    :param stdin: Optional bytestring that is passed to command stdin,
+                  or subprocess.DEVNULL to disable stdin.
     :param boolean print_stdout: Pass stdout through to sys.stdout.
     :param boolean print_stderr: Pass stderr through to sys.stderr.
     :param callback_stdout: Optional function which is called for each
@@ -348,6 +349,12 @@ def run(
 
     if stdin is None:
         stdin_pipe = None
+    elif isinstance(stdin, int):
+        assert (
+            stdin == subprocess.DEVNULL
+        ), "stdin argument only allows subprocess.DEVNULL as numeric argument"
+        stdin_pipe = subprocess.DEVNULL
+        stdin = None
     else:
         assert sys.platform != "win32", "stdin argument not supported on Windows"
         stdin_pipe = subprocess.PIPE

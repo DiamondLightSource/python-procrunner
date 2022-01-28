@@ -23,6 +23,19 @@ def test_simple_command_invocation():
     assert result.stderr == b""
 
 
+def test_simple_command_invocation_with_closed_stdin():
+    if os.name == "nt":
+        command = ["cmd.exe", "/c", "echo", "hello"]
+    else:
+        command = ["echo", "hello"]
+
+    result = procrunner.run(command, stdin=subprocess.DEVNULL)
+
+    assert result.returncode == 0
+    assert result.stdout == b"hello" + os.linesep.encode("utf-8")
+    assert result.stderr == b""
+
+
 def test_decode_invalid_utf8_input(capsys):
     test_string = b"test\xa0string\n"
     if os.name == "nt":
