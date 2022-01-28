@@ -46,7 +46,7 @@ from typing import Any, Callable, Optional, Union
 #   stderr=b'/bin/ls: cannot access /some/path/containing spaces: No such file or directory\n'
 # )
 
-__version__ = "2.3.1"
+__version__ = "2.3.2"
 
 logger = logging.getLogger("procrunner")
 logger.addHandler(logging.NullHandler())

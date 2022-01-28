@@ -1,6 +1,5 @@
-=======
 History
-=======
+==================
 
 3.0.0 (2022-01-??)
 ------------------
@@ -16,6 +15,9 @@ History
   (previously deprecated in `#62 <https://github.com/DiamondLightSource/python-procrunner/pull/62>`_)
 * The run() function no longer accepts a 'debug' argument
   (previously deprecated in `#63 <https://github.com/DiamondLightSource/python-procrunner/pull/63>`_)
+
+2.3.2 (2022-01-28)
+------------------
 * The run() function now understands stdin=subprocess.DEVNULL to close the subprocess stdin,
   rather than to connect through the existing stdin, which is the current default
 
