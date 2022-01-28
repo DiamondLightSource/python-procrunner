@@ -455,7 +455,8 @@ def run(
     :param array command: Command line to be run, specified as array.
     :param timeout: Terminate program execution after this many seconds.
     :param boolean debug: Enable further debug messages. (deprecated)
-    :param stdin: Optional bytestring that is passed to command stdin.
+    :param stdin: Optional bytestring that is passed to command stdin,
+                  or subprocess.DEVNULL to disable stdin.
     :param boolean print_stdout: Pass stdout through to sys.stdout.
     :param boolean print_stderr: Pass stderr through to sys.stderr.
     :param callback_stdout: Optional function which is called for each
@@ -485,6 +486,12 @@ def run(
 
     if stdin is None:
         stdin_pipe = None
+    elif isinstance(stdin, int):
+        assert (
+            stdin == subprocess.DEVNULL
+        ), "stdin argument only allows subprocess.DEVNULL as numeric argument"
+        stdin_pipe = subprocess.DEVNULL
+        stdin = None
     else:
         assert sys.platform != "win32", "stdin argument not supported on Windows"
         stdin_pipe = subprocess.PIPE
