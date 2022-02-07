@@ -1,8 +1,8 @@
 bump2version==1.0.1
-coverage==6.2
+coverage==6.3.1
 pip==21.3.1
 pytest==6.2.5
 Sphinx==4.4.0
 tox==3.24.5
-twine==3.7.1
+twine==3.8.0
 wheel==0.37.1
