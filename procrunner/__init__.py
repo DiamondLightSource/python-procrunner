@@ -445,6 +445,8 @@ def run(
     win32resolve=True,
     working_directory=None,
     raise_timeout_exception=False,
+    creationflags=0,
+    preexec_fn=None,
 ):
     """
     Run an external process.
@@ -477,6 +479,8 @@ def run(
                              instead of returning an object that can be checked
                              for a timeout condition. Defaults to False, will be
                              changed to True in a future release.
+    :param preexec_fn: pre-execution function, will be passed to subprocess call
+    :param creationflags: flags that will be passed to subprocess call
     :return: The exit code, stdout, stderr (separately, as byte strings)
              as a subprocess.CompletedProcess object.
     """
@@ -536,6 +540,8 @@ def run(
         stdin=stdin_pipe,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        creationflags=creationflags,
+        preexec_fn=preexec_fn,
     )
 
     thread_pipe_pool = []
