@@ -16,6 +16,11 @@ History
 * The run() function no longer accepts a 'debug' argument
   (previously deprecated in `#63 <https://github.com/DiamondLightSource/python-procrunner/pull/63>`_)
 
+2.3.3 (2022-03-23)
+------------------
+* Allow specifying 'preexec_fn' and 'creationflags' keywords, which will be passed through to
+  the subprocess call
+
 2.3.2 (2022-01-28)
 ------------------
 * The run() function now understands stdin=subprocess.DEVNULL to close the subprocess stdin,

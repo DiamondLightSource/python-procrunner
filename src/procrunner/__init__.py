@@ -46,7 +46,7 @@ from typing import Any, Callable, Optional, Union
 #   stderr=b'/bin/ls: cannot access /some/path/containing spaces: No such file or directory\n'
 # )
 
-__version__ = "2.3.2"
+__version__ = "2.3.3"
 
 logger = logging.getLogger("procrunner")
 logger.addHandler(logging.NullHandler())
@@ -304,16 +304,18 @@ def run(
     command,
     *,
     timeout: Optional[float] = None,
-    stdin: Optional[Union[bytes, int]] = None,
-    print_stdout: bool = True,
-    print_stderr: bool = True,
-    callback_stdout: Optional[Callable] = None,
     callback_stderr: Optional[Callable] = None,
+    callback_stdout: Optional[Callable] = None,
+    creationflags: int = 0,
     environment: Optional[dict[str, str]] = None,
     environment_override: Optional[dict[str, str]] = None,
+    preexec_fn: Optional[Callable] = None,
+    print_stderr: bool = True,
+    print_stdout: bool = True,
+    raise_timeout_exception: Any = ...,
+    stdin: Optional[Union[bytes, int]] = None,
     win32resolve: bool = True,
     working_directory: Optional[str] = None,
-    raise_timeout_exception: Any = ...,
 ) -> subprocess.CompletedProcess:
     """
     Run an external process.
@@ -331,9 +333,11 @@ def run(
                             stdout line.
     :param callback_stderr: Optional function which is called for each
                             stderr line.
+    :param creationflags: flags that will be passed to subprocess call
     :param dict environment: The full execution environment for the command.
     :param dict environment_override: Change environment variables from the
                                       current values for command execution.
+    :param preexec_fn: pre-execution function, will be passed to subprocess call
     :param boolean win32resolve: If on Windows, find the appropriate executable
                                  first. This allows running of .bat, .cmd, etc.
                                  files without explicitly specifying their
@@ -399,6 +403,8 @@ def run(
         stdin=stdin_pipe,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        creationflags=creationflags,
+        preexec_fn=preexec_fn,
     )
 
     thread_pipe_pool = []
