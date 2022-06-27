@@ -2,7 +2,7 @@ bump2version==1.0.1
 coverage==6.4
 pip==22.1.1
 pytest==7.1.2
-Sphinx==4.5.0
+Sphinx==5.0.2
 tox==3.25.0
 twine==4.0.0
 wheel==0.37.1
