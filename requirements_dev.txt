@@ -5,4 +5,4 @@ pytest==7.1.2
 Sphinx==6.1.1
 tox==4.2.6
 twine==4.0.0
-wheel==0.37.1
+wheel==0.38.1
