@@ -3,7 +3,7 @@ History
 
 3.0.0 (2022-01-??)
 ------------------
-* Drop Python 3.6 support
+* Drop Python 3.6, 3.7 support
 * The run() function now returns a subprocess.CompletedProcess object,
   which no longer allows array access operations
   (those were deprecated in `#60 <https://github.com/DiamondLightSource/python-procrunner/pull/60>`_)
