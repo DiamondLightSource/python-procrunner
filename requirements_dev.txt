@@ -1,8 +1,8 @@
 bump2version==1.0.1
-coverage==7.2.7
+coverage==7.6.3
 pip==23.1.2
-pytest==7.3.1
-Sphinx==7.0.1
-tox==4.6.0
+pytest==7.4.4
+Sphinx==7.4.7
+tox==4.22.0
 twine==4.0.2
-wheel==0.40.0
+wheel==0.44.0
